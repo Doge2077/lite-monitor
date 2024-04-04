@@ -2,7 +2,6 @@ package com.example.controller;
 
 import com.example.entity.RestBean;
 import com.example.entity.vo.request.ConfirmResetVO;
-import com.example.entity.vo.request.EmailRegisterVO;
 import com.example.entity.vo.request.EmailResetVO;
 import com.example.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,23 +38,12 @@ public class AuthorizeController {
     @GetMapping("/ask-code")
     @Operation(summary = "请求邮件验证码")
     public RestBean<Void> askVerifyCode(@RequestParam @Email String email,
-                                        @RequestParam @Pattern(regexp = "(register|reset)")  String type,
+                                        @RequestParam @Pattern(regexp = "(reset)")  String type,
                                         HttpServletRequest request){
         return this.messageHandle(() ->
                 accountService.registerEmailVerifyCode(type, String.valueOf(email), request.getRemoteAddr()));
     }
 
-    /**
-     * 进行用户注册操作，需要先请求邮件验证码
-     * @param vo 注册信息
-     * @return 是否注册成功
-     */
-    @PostMapping("/register")
-    @Operation(summary = "用户注册操作")
-    public RestBean<Void> register(@RequestBody @Valid EmailRegisterVO vo){
-        return this.messageHandle(() ->
-                accountService.registerEmailAccount(vo));
-    }
 
     /**
      * 执行密码重置确认，检查验证码是否正确
