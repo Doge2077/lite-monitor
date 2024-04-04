@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> implements ClientService {
 
@@ -75,6 +76,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         for (int i = 0; i < 24; i ++) {
             token.append(TEMPLATE.charAt(secureRandom.nextInt(TEMPLATE.length())));
         }
+        log.info("生成 Token：{}", token.toString());
         return token.toString();
     }
 

@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         String uri = request.getRequestURI();
         if (uri.startsWith("/monitor")) {
-            if (uri.endsWith("/register")) {
+            if (!uri.endsWith("/register")) {
                 Client client = this.clientService.getClientByToken(authorization);
                 if (client == null) {
                     response.setStatus(401);
