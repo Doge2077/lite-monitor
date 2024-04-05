@@ -3,3 +3,4 @@ log
 local-config
 lite-monitor-client/target
 lite-monitor-server/target
+target
