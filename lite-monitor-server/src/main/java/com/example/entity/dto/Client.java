@@ -13,7 +13,7 @@ import java.util.Date;
 public class Client {
     @TableId
     Integer id;
-    String name;
-    String token;
+    String clientName;
+    String clientToken;
     Date registerTime;
 }

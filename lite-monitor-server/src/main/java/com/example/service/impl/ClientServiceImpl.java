@@ -2,10 +2,15 @@ package com.example.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
+import com.example.entity.dto.ClientDetail;
+import com.example.entity.vo.request.ClientDetailVO;
+import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -17,12 +22,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> implements ClientService {
 
+    @Resource
+    ClientDetailMapper clientDetailMapper;
+
     private String registerToken = this.generateNewToken();
 
     // 本地 Client Id 缓存
     private final Map<Integer, Client> clientIdCache = new ConcurrentHashMap<>();
     // 本地 Client Token 缓存
-    private final Map<String, Client> clientToeknCache = new ConcurrentHashMap<>();
+    private final Map<String, Client> clientTokenCache = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void initClientCache() {
@@ -57,12 +65,24 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Override
     public Client getClientByToken(String token) {
-        return this.clientToeknCache.get(token);
+        return this.clientTokenCache.get(token);
+    }
+
+    @Override
+    public Boolean updateClientDetail(ClientDetailVO clientDetailVO, Client client) {
+        ClientDetail clientDetail = new ClientDetail();
+        BeanUtils.copyProperties(clientDetailVO, clientDetail);
+        clientDetail.setId(client.getId());
+        if (clientDetailMapper.selectById(client.getId()) != null) {
+            return clientDetailMapper.updateById(clientDetail) == 1;
+        } else {
+            return clientDetailMapper.insert(clientDetail) == 1;
+        }
     }
 
     private void updateCache(Client client) {
         this.clientIdCache.put(client.getId(), client);
-        this.clientToeknCache.put(client.getToken(), client);
+        this.clientTokenCache.put(client.getClientToken(), client);
     }
 
     private int generateClientId() {
@@ -76,7 +96,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         for (int i = 0; i < 24; i ++) {
             token.append(TEMPLATE.charAt(secureRandom.nextInt(TEMPLATE.length())));
         }
-        log.info("生成 Token：{}", token.toString());
+        log.info("生成 Token：{}", token);
         return token.toString();
     }
 

@@ -19,7 +19,7 @@ import java.util.Properties;
 @Slf4j
 @Component
 public class MonitorUtils {
-    private final double DISK_BASE = 1024.0;
+    private static final double DISK_BASE = 1024.0;
 
     public ClientDetail getClientDetail() {
         SystemInfo systemInfo = new SystemInfo();
@@ -55,7 +55,7 @@ public class MonitorUtils {
                 }
             }
         } catch (IOException e) {
-            log.error("获取客户端地址失败：{}", e.getCause());
+            log.error("获取客户端地址失败：{}", e.getMessage());
         }
         return null;
     }

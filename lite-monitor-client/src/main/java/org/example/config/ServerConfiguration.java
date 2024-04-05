@@ -4,9 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.entity.ConnectionConfig;
-import org.example.utils.MonitorUtils;
-import org.example.utils.NetUtil;
-import org.springframework.context.annotation.Bean;
+import org.example.utils.NetUtils;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
@@ -21,10 +19,9 @@ import java.util.Scanner;
 public class ServerConfiguration {
 
     @Resource
-    NetUtil netUtil;
+    NetUtils netUtils;
 
-    @Bean
-    ConnectionConfig connectionConfig() {
+    public ConnectionConfig connectionConfig() {
         log.info("正在加载服务端连接配置 ...");
         ConnectionConfig connectionConfig = this.getConfigurationFromFile();
         if (connectionConfig == null) {
@@ -42,7 +39,7 @@ public class ServerConfiguration {
             log.info("请输入服务端生成的注册 Token 密钥：");
             System.out.println(serverAddress);
             token = scanner.nextLine();
-        } while (!this.netUtil.registerToServer(serverAddress, token));
+        } while (!this.netUtils.registerToServer(serverAddress, token));
         ConnectionConfig connectionConfig = new ConnectionConfig(serverAddress, token);
         this.saveConnectionConfigAsFile(connectionConfig);
         return connectionConfig;
@@ -62,7 +59,7 @@ public class ServerConfiguration {
         }
     }
 
-    private ConnectionConfig getConfigurationFromFile() {
+    public ConnectionConfig getConfigurationFromFile() {
         File config = new File("local-config/server.json");
         if (config.exists()) {
             try (FileInputStream fileInputStream = new FileInputStream(config)){
