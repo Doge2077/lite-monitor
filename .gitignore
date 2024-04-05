@@ -2,3 +2,4 @@
 log
 local-config
 target
+*.class
