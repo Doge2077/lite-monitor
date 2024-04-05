@@ -1,5 +1,5 @@
 .idea
 log
 local-config
-target
-*.class
+lite-monitor-client/target
+lite-monitor-server/target
