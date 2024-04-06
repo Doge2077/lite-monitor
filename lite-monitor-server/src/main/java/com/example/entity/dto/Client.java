@@ -16,4 +16,6 @@ public class Client {
     String clientName;
     String clientToken;
     Date registerTime;
+    String node;
+    String location;
 }

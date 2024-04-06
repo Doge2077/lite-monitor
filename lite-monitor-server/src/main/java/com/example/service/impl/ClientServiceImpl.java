@@ -41,7 +41,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public Boolean verifyAndRegister(String token) {
         if (this.registerToken.equals(token)) {
             int clientId = this.generateClientId();
-            Client client = new Client(clientId, "未命名主机", token, new Date());
+            Client client = new Client(clientId, "未命名主机", token, new Date(), "未命名节点", "cn");
             if (this.save(client)) {
                 // 如果保存成功，则生成一个新的 registerToken 给下一个注册的 Client 使用
                 this.registerToken = this.generateNewToken();
