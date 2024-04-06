@@ -2,8 +2,11 @@ package org.example.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.entity.ClientDetail;
+import org.example.entity.RuntimeDetail;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
 import oshi.hardware.platform.linux.LinuxNetworkIF;
@@ -14,12 +17,20 @@ import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Properties;
 
 @Slf4j
 @Component
 public class MonitorUtils {
+
+    private static final double STATISTIC_TIME = 0.5;
+
     private static final double DISK_BASE = 1024.0;
+
+    private static final double DISK_MB = DISK_BASE * DISK_BASE;
+
+    private static final double DISK_GB = DISK_MB * DISK_BASE;
 
     public ClientDetail getClientDetail() {
         SystemInfo systemInfo = new SystemInfo();
@@ -29,8 +40,8 @@ public class MonitorUtils {
         HardwareAbstractionLayer osHardwareInfo = systemInfo.getHardware();
         NetworkIF networkInfo = this.getClientAddress(osHardwareInfo);
 
-        Double osMemory = osHardwareInfo.getMemory().getTotal() / (DISK_BASE * DISK_BASE * DISK_BASE);
-        Double diskMemory = Arrays.stream(File.listRoots()).mapToLong(File::getTotalSpace).sum() / (DISK_BASE * DISK_BASE * DISK_BASE);
+        Double osMemory = osHardwareInfo.getMemory().getTotal() / DISK_GB;
+        Double diskMemory = Arrays.stream(File.listRoots()).mapToLong(File::getTotalSpace).sum() / DISK_GB;
         return new ClientDetail()
                 .setOsArch(properties.getProperty("os.arch"))
                 .setOsName(osSoftwareInfo.getFamily())
@@ -58,6 +69,69 @@ public class MonitorUtils {
             log.error("获取客户端地址失败：{}", e.getMessage());
         }
         return null;
+    }
+
+    public RuntimeDetail getRuntimeDetail() {
+        try {
+            SystemInfo systemInfo = new SystemInfo();
+            HardwareAbstractionLayer osHardwareInfo = systemInfo.getHardware();
+            NetworkIF networkIF = this.getClientAddress(osHardwareInfo);
+            if (networkIF == null) {
+                log.error("获取网络信息失败");
+                return null;
+            } else {
+                CentralProcessor centralProcessor = osHardwareInfo.getProcessor();
+                double networkUpload = networkIF.getBytesSent();
+                double networkDownload = networkIF.getBytesRecv();
+                double diskRead = osHardwareInfo.getDiskStores().stream().mapToLong(HWDiskStore::getReadBytes).sum();
+                double diskWrite = osHardwareInfo.getDiskStores().stream().mapToLong(HWDiskStore::getWriteBytes).sum();
+                long[] cpuUsage = centralProcessor.getSystemCpuLoadTicks();
+                // 时间段统计 0.5s 的数据量取平均值
+                Thread.sleep((long) STATISTIC_TIME * 1000);
+                networkIF = this.getClientAddress(osHardwareInfo);
+                networkUpload = (networkIF.getBytesSent() - networkUpload) / STATISTIC_TIME;
+                networkDownload = (networkIF.getBytesRecv() - networkDownload) / STATISTIC_TIME;
+                diskRead = (osHardwareInfo.getDiskStores().stream().mapToLong(HWDiskStore::getReadBytes).sum() - diskRead) / STATISTIC_TIME;
+                diskWrite = (osHardwareInfo.getDiskStores().stream().mapToLong(HWDiskStore::getWriteBytes).sum() - diskWrite) / STATISTIC_TIME;
+                double memoryUsage = (osHardwareInfo.getMemory().getTotal() - osHardwareInfo.getMemory().getAvailable()) / DISK_GB;
+                double diskUsage = Arrays.stream(File.listRoots()).mapToLong(
+                        file -> file.getTotalSpace() - file.getFreeSpace()
+                ).sum() / DISK_GB;
+                return new RuntimeDetail()
+                        .setTimestamp(new Date().getTime())
+                        .setCpuUsage(this.getCpuUsage(centralProcessor, cpuUsage))
+                        .setMemoryUsage(memoryUsage)
+                        .setDiskRead(diskUsage)
+                        .setNetworkUpload(networkUpload / DISK_BASE)
+                        .setNetworkDownload(networkDownload / DISK_BASE)
+                        .setDiskRead(diskRead / DISK_MB)
+                        .setDiskWrite(diskWrite / DISK_MB);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private double getCpuUsage(CentralProcessor processor, long[] prevTicks) {
+        long[] ticks = processor.getSystemCpuLoadTicks();
+        long nice = ticks[CentralProcessor.TickType.NICE.getIndex()]
+            - prevTicks[CentralProcessor.TickType.NICE.getIndex()];
+        long irq = ticks[CentralProcessor.TickType.IRQ.getIndex()]
+            - prevTicks[CentralProcessor.TickType.IRQ.getIndex()];
+        long softIrq = ticks[CentralProcessor.TickType.SOFTIRQ.getIndex()]
+            - prevTicks[CentralProcessor.TickType.SOFTIRQ.getIndex()];
+        long steal = ticks[CentralProcessor.TickType.STEAL.getIndex()]
+            - prevTicks[CentralProcessor.TickType.STEAL.getIndex()];
+        long cSys = ticks[CentralProcessor.TickType.SYSTEM.getIndex()]
+            - prevTicks[CentralProcessor.TickType.SYSTEM.getIndex()];
+        long cUser = ticks[CentralProcessor.TickType.USER.getIndex()]
+            - prevTicks[CentralProcessor.TickType.USER.getIndex()];
+        long ioWait = ticks[CentralProcessor.TickType.IOWAIT.getIndex()]
+            - prevTicks[CentralProcessor.TickType.IOWAIT.getIndex()];
+        long idle = ticks[CentralProcessor.TickType.IDLE.getIndex()]
+            - prevTicks[CentralProcessor.TickType.IDLE.getIndex()];
+        Long totalCpu = cUser + nice + cSys + idle + ioWait + irq + softIrq + steal;
+        return (cSys + cUser) * 1.0 / totalCpu;
     }
 
 }

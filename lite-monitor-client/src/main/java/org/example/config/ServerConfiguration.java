@@ -37,7 +37,6 @@ public class ServerConfiguration {
             log.info("请输入服务端地址及其端口号（127.0.0.1:8080）：");
             serverAddress = "http://" +  scanner.nextLine();
             log.info("请输入服务端生成的注册 Token 密钥：");
-            System.out.println(serverAddress);
             token = scanner.nextLine();
         } while (!this.netUtils.registerToServer(serverAddress, token));
         ConnectionConfig connectionConfig = new ConnectionConfig(serverAddress, token);
