@@ -3,9 +3,12 @@ package com.example.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
+import com.example.entity.dto.RuntimeDetail;
 import com.example.entity.vo.request.ClientDetailVO;
+import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
+import com.example.mapper.RuntimeDetailMapper;
 import com.example.service.ClientService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -24,6 +27,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Resource
     ClientDetailMapper clientDetailMapper;
+
+    @Resource
+    RuntimeDetailMapper runtimeDetailMapper;
 
     private String registerToken = this.generateNewToken();
 
@@ -77,6 +83,21 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
             return clientDetailMapper.updateById(clientDetail) == 1;
         } else {
             return clientDetailMapper.insert(clientDetail) == 1;
+        }
+    }
+
+    private Map<Integer, RuntimeDetailVO> currentRuntime = new ConcurrentHashMap<>();
+
+    @Override
+    public Boolean updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client) {
+        RuntimeDetail runtimeDetail = new RuntimeDetail();
+        BeanUtils.copyProperties(runtimeDetailVO, runtimeDetail);
+        runtimeDetail.setId(client.getId());
+        currentRuntime.put(client.getId(), runtimeDetailVO);
+        if (runtimeDetailMapper.selectById(client.getId()) != null) {
+            return runtimeDetailMapper.updateById(runtimeDetail) == 1;
+        } else {
+            return runtimeDetailMapper.insert(runtimeDetail) == 1;
         }
     }
 

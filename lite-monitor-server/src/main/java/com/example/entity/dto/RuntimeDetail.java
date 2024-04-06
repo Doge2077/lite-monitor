@@ -1,13 +1,15 @@
-package org.example.entity;
+package com.example.entity.dto;
 
-import lombok.AllArgsConstructor;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 @Data
-@Accessors(chain = true)
+@TableName("db_runtime_detail")
 public class RuntimeDetail {
     // 客户端运行时信息
+    @TableId
+    Integer id;
     // 时间戳
     Long timestamp;
     // cpu 占用率

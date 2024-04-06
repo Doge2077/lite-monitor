@@ -101,7 +101,7 @@ public class MonitorUtils {
                         .setTimestamp(new Date().getTime())
                         .setCpuUsage(this.getCpuUsage(centralProcessor, cpuUsage))
                         .setMemoryUsage(memoryUsage)
-                        .setDiskRead(diskUsage)
+                        .setDiskUsage(diskUsage)
                         .setNetworkUpload(networkUpload / DISK_BASE)
                         .setNetworkDownload(networkDownload / DISK_BASE)
                         .setDiskRead(diskRead / DISK_MB)

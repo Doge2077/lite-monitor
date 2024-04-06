@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NonNull;
 
 @Data
-@TableName("db_client_details")
 public class ClientDetailVO {
 
     // 客户端系统信息

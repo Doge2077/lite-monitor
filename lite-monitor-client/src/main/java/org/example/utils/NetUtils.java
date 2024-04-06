@@ -7,6 +7,7 @@ import org.example.config.ServerConfiguration;
 import org.example.entity.ClientDetail;
 import org.example.entity.ConnectionConfig;
 import org.example.entity.Response;
+import org.example.entity.RuntimeDetail;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -56,6 +57,13 @@ public class NetUtils {
             log.info("客户端数据上报完成");
         } else {
             log.error("客户端数据上报失败：{}", response.msg());
+        }
+    }
+
+    public void updateRuntimeDetail(RuntimeDetail runtimeDetail) {
+        Response response = this.doPost("/runtime", runtimeDetail);
+        if (!response.success()) {
+            log.error("客户端运行时数据上报失败：{}", response.msg());
         }
     }
 
