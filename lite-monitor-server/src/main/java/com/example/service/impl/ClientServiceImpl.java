@@ -10,6 +10,7 @@ import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.mapper.RuntimeDetailMapper;
 import com.example.service.ClientService;
+import com.example.utils.InfluxDbUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Resource
     RuntimeDetailMapper runtimeDetailMapper;
+
+    @Resource
+    InfluxDbUtils influxDbUtils;
 
     private String registerToken = this.generateNewToken();
 
@@ -86,19 +90,10 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         }
     }
 
-    private Map<Integer, RuntimeDetailVO> currentRuntime = new ConcurrentHashMap<>();
-
     @Override
     public Boolean updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client) {
-        RuntimeDetail runtimeDetail = new RuntimeDetail();
-        BeanUtils.copyProperties(runtimeDetailVO, runtimeDetail);
-        runtimeDetail.setId(client.getId());
-        currentRuntime.put(client.getId(), runtimeDetailVO);
-        if (runtimeDetailMapper.selectById(client.getId()) != null) {
-            return runtimeDetailMapper.updateById(runtimeDetail) == 1;
-        } else {
-            return runtimeDetailMapper.insert(runtimeDetail) == 1;
-        }
+        this.influxDbUtils.updateRuntimeDetial(client.getId(), runtimeDetailVO);
+        return true;
     }
 
     private void updateCache(Client client) {
