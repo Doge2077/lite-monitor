@@ -3,9 +3,9 @@ package com.example.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
-import com.example.entity.dto.RuntimeDetail;
 import com.example.entity.vo.request.ClientDetailVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.mapper.RuntimeDetailMapper;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -90,10 +91,27 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         }
     }
 
+    private final Map<Integer, RuntimeDetailVO> currentRuntime = new ConcurrentHashMap<>();
+
     @Override
     public Boolean updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client) {
+        this.currentRuntime.put(client.getId(), runtimeDetailVO);
         this.influxDbUtils.updateRuntimeDetial(client.getId(), runtimeDetailVO);
         return true;
+    }
+
+    @Override
+    public List<ClientPreviewVO> listClients() {
+        return clientIdCache.values().stream().map(client -> {
+            ClientPreviewVO clientPreviewVO = client.asViewObject(ClientPreviewVO.class);
+            BeanUtils.copyProperties(this.clientDetailMapper.selectById(client.getId()), clientPreviewVO);
+            RuntimeDetailVO runtimeDetailVO = this.currentRuntime.get(client.getId());
+            if (runtimeDetailVO != null && System.currentTimeMillis() - runtimeDetailVO.getTimestamp() < 30 * 1000) {
+                BeanUtils.copyProperties(runtimeDetailVO, clientPreviewVO);
+                clientPreviewVO.setOnline(true);
+            }
+            return clientPreviewVO;
+        }).toList();
     }
 
     private void updateCache(Client client) {

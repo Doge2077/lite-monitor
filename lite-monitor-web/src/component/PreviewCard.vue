@@ -1,5 +1,8 @@
 <script setup>
-
+import {fitByUnit} from '@/tools'
+const props = defineProps({
+  data: Object
+})
 </script>
 
 <template>
@@ -7,37 +10,44 @@
     <div style="display: flex; justify-content: space-between">
       <div>
         <div class="name">
-          <span class="flag-icon flag-icon-cn"></span>
-          <span style="margin: 0 5px">LYS后端服务器</span>
+          <span :class="`flag-icon flag-icon-${data.location}`"></span>
+          <span style="margin: 0 5px"> {{data.clientName }} </span>
           <i class="fa-regular fa-pen-to-square"></i>
         </div>
         <div class="os">
-          操作系统：Debian 12.11
+          操作系统：{{`${data.osName} ${data.osVersion}`}}
         </div>
       </div>
-      <div class="status">
+      <div class="status" v-if="data.online">
         <i style="color: #18cb18" class="fa-regular fa-circle-play"></i>
         <span style="margin-left: 5px">运行中</span>
       </div>
+      <div class="status" v-else>
+        <i style="color: red" class="fa-regular fa-circle-stop"></i>
+        <span style="margin-left: 5px">离线</span>
+      </div>
     </div>
-    <el-divider style="margin: 10px 0"/>
+    <el-divider style="margin: 10px 0; border-color: white"/>
     <div class="network">
-      <span style="margin-right: 10px">公网IP：127.0.0.1</span>
+      <span style="margin-right: 10px">公网IP：{{ data.clientAddress }}</span>
       <i class="fa-regular fa-copy" style="color: dodgerblue"></i>
+    </div>
+    <div class="cpu">
+      <span style="margin-right: 10px">处理器：{{ data.cpuName }}</span>
     </div>
     <div class="hardware">
       <i class="fa-solid fa-microchip"></i>
-      <span style="margin: 0 5px">2 CPU</span>
+      <span style="margin: 0 5px"> {{data.cpuCores}} CPU</span>
       <i class="fa-solid fa-memory"></i>
-      <span style="margin: 0 5px">4 GB</span>
+      <span style="margin: 0 5px"> {{ data.osMemory.toFixed(1)}} GB</span>
     </div>
     <div class="progress">
-      <span style="margin-right: 10px;">CPU: 2.5%</span>
-      <el-progress status="success" :percentage="2.5" :stroke-width="5" :show-text="false"/>
+      <span style="margin-right: 10px;">CPU: {{ `${((1 - data.cpuUsage) * 100).toFixed(1)}`}} %</span>
+      <el-progress status="success" :percentage="data.cpuUsage * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="progress">
-      <span style="margin-right: 10px;">内存: 1.2%</span>
-      <el-progress status="success" :percentage="1.2 / 10 * 100" :stroke-width="5" :show-text="false"/>
+      <span style="margin-right: 10px;">内存: {{ `${data.memoryUsage.toFixed(1)}`}} GB({{`${(data.memoryUsage / data.osMemory * 100).toFixed(1)}`}}%)</span>
+      <el-progress status="success" :percentage="data.memoryUsage / data.osMemory * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="network-flow">
       <div>
@@ -45,10 +55,10 @@
       </div>
       <div>
         <i class="fa-solid fa-upload"></i>
-        <span style="margin: 0 5px">52 KB.s</span>
+        <span style="margin: 0 5px"> {{ `${fitByUnit(data.networkUpload, 'KB')}/s` }} </span>
         <el-divider direction="vertical"/>
         <i class="fa-solid fa-download"></i>
-        <span style="margin: 0 5px">256 KB/s</span>
+        <span style="margin: 0 5px">{{ `${fitByUnit(data.networkDownload, 'KB')}/s` }}</span>
       </div>
     </div>
   </div>
@@ -80,6 +90,10 @@
   }
 
   .network{
+    font-size: 13px;
+  }
+
+  .cpu{
     font-size: 13px;
   }
 
