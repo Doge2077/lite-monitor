@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ClientPreviewVO {
-    Integer id;
+    Integer clientId;
     // 运行状态
     Boolean online;
     // 主机名

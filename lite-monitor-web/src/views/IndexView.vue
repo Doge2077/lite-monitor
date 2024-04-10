@@ -89,6 +89,8 @@ function userLogout() {
       }
       .my-avatar:hover{
         cursor: pointer;
+        scale: 1.1;
+        opacity: 0.8;
       }
 
     }

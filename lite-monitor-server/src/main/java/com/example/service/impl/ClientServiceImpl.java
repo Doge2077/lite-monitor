@@ -1,14 +1,15 @@
 package com.example.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
 import com.example.entity.vo.request.ClientDetailVO;
+import com.example.entity.vo.request.RenameClientVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
-import com.example.mapper.RuntimeDetailMapper;
 import com.example.service.ClientService;
 import com.example.utils.InfluxDbUtils;
 import jakarta.annotation.PostConstruct;
@@ -18,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.sql.Wrapper;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +31,6 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Resource
     ClientDetailMapper clientDetailMapper;
-
-    @Resource
-    RuntimeDetailMapper runtimeDetailMapper;
 
     @Resource
     InfluxDbUtils influxDbUtils;
@@ -83,8 +82,8 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public Boolean updateClientDetail(ClientDetailVO clientDetailVO, Client client) {
         ClientDetail clientDetail = new ClientDetail();
         BeanUtils.copyProperties(clientDetailVO, clientDetail);
-        clientDetail.setId(client.getId());
-        if (clientDetailMapper.selectById(client.getId()) != null) {
+        clientDetail.setClientId(client.getClientId());
+        if (clientDetailMapper.selectById(client.getClientId()) != null) {
             return clientDetailMapper.updateById(clientDetail) == 1;
         } else {
             return clientDetailMapper.insert(clientDetail) == 1;
@@ -95,8 +94,8 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Override
     public Boolean updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client) {
-        this.currentRuntime.put(client.getId(), runtimeDetailVO);
-        this.influxDbUtils.updateRuntimeDetial(client.getId(), runtimeDetailVO);
+        this.currentRuntime.put(client.getClientId(), runtimeDetailVO);
+        this.influxDbUtils.updateRuntimeDetial(client.getClientId(), runtimeDetailVO);
         return true;
     }
 
@@ -104,8 +103,8 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public List<ClientPreviewVO> listClients() {
         return clientIdCache.values().stream().map(client -> {
             ClientPreviewVO clientPreviewVO = client.asViewObject(ClientPreviewVO.class);
-            BeanUtils.copyProperties(this.clientDetailMapper.selectById(client.getId()), clientPreviewVO);
-            RuntimeDetailVO runtimeDetailVO = this.currentRuntime.get(client.getId());
+            BeanUtils.copyProperties(this.clientDetailMapper.selectById(client.getClientId()), clientPreviewVO);
+            RuntimeDetailVO runtimeDetailVO = this.currentRuntime.get(client.getClientId());
             if (runtimeDetailVO != null && System.currentTimeMillis() - runtimeDetailVO.getTimestamp() < 30 * 1000) {
                 BeanUtils.copyProperties(runtimeDetailVO, clientPreviewVO);
                 clientPreviewVO.setOnline(true);
@@ -114,8 +113,14 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         }).toList();
     }
 
+    @Override
+    public void renameClient(RenameClientVO renameClientVO) {
+        this.update(Wrappers.<Client>update().eq("client_id", renameClientVO.getClientId()).set("client_name", renameClientVO.getClientName()));
+        this.initClientCache();
+    }
+
     private void updateCache(Client client) {
-        this.clientIdCache.put(client.getId(), client);
+        this.clientIdCache.put(client.getClientId(), client);
         this.clientTokenCache.put(client.getClientToken(), client);
     }
 

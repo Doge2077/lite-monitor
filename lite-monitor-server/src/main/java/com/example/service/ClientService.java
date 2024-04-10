@@ -3,6 +3,7 @@ package com.example.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.entity.dto.Client;
 import com.example.entity.vo.request.ClientDetailVO;
+import com.example.entity.vo.request.RenameClientVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.entity.vo.response.ClientPreviewVO;
 
@@ -19,4 +20,5 @@ public interface ClientService extends IService<Client> {
     Boolean updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client);
     // 列出所有主机
     List<ClientPreviewVO> listClients();
+    void renameClient(RenameClientVO renameClientVO);
 }

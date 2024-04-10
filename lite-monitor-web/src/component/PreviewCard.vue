@@ -1,8 +1,33 @@
 <script setup>
 import {fitByUnit} from '@/tools'
+import {useClipboard} from "@vueuse/core";
+import {ElMessage, ElMessageBox} from "element-plus";
+import {post} from "@/net";
 const props = defineProps({
-  data: Object
+  data: Object,
+  update: Function
 })
+
+const { copy } = useClipboard()
+const copyId = () => copy(props.data.clientAddress).then(() => ElMessage.success('成功复制到剪切板'))
+
+function rename() {
+  ElMessageBox.prompt('请输入新的服务器主机名称', '修改名称', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    inputValue: props.data.clientName,
+    inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,10}$/,
+    inputErrorMessage: '名称只能包含中英文字符、数字和下划线',
+  }).then(({ value }) => post('/api/monitor/rename',{
+    clientId: props.data.clientId,
+    clientName: value
+  },() => {
+      ElMessage.success('主机名称已更新')
+      props.update()
+    })
+  )
+}
+
 </script>
 
 <template>
@@ -12,7 +37,7 @@ const props = defineProps({
         <div class="name">
           <span :class="`flag-icon flag-icon-${data.location}`"></span>
           <span style="margin: 0 5px"> {{data.clientName }} </span>
-          <i class="fa-regular fa-pen-to-square"></i>
+          <i class="fa-regular fa-pen-to-square interact-item" @click.stop="rename"></i>
         </div>
         <div class="os">
           操作系统：{{`${data.osName} ${data.osVersion}`}}
@@ -30,7 +55,7 @@ const props = defineProps({
     <el-divider style="margin: 10px 0; border-color: white"/>
     <div class="network">
       <span style="margin-right: 10px">公网IP：{{ data.clientAddress }}</span>
-      <i class="fa-regular fa-copy" style="color: dodgerblue"></i>
+      <i class="fa-regular fa-copy interact-item" @click.stop="copyId" style="color: dodgerblue"></i>
     </div>
     <div class="cpu">
       <span style="margin-right: 10px">处理器：{{ data.cpuName }}</span>
@@ -65,6 +90,16 @@ const props = defineProps({
 </template>
 
 <style scoped>
+
+.interact-item{
+  transition: .3s;
+  &:hover{
+    cursor: pointer;
+    scale: 1.1;
+    opacity: 0.8;
+  }
+}
+
 .instance-card{
   width: 320px;
   padding: 15px;

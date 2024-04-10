@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @TableName("db_client_detail")
 public class ClientDetail {
     @TableId
-    Integer id;
+    Integer clientId;
     // 客户端系统信息
     // 客户端 ip 地址
     String clientAddress;

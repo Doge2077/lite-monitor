@@ -13,7 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class Client implements BaseData {
     @TableId
-    Integer id;
+    Integer clientId;
     String clientName;
     String clientToken;
     Date registerTime;

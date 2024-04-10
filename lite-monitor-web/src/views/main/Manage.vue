@@ -15,7 +15,7 @@ updateList()
     <div class="desc">在这里管理所有已经注册的主机实例，实时监控主机状态，快速管理</div>
     <el-divider style="margin: 10px 0;"/>
     <div class="card-list">
-      <preview-card v-for="item in list" :data="item"/>
+      <preview-card v-for="item in list" :data="item" :update="updateList"/>
     </div>
   </div>
 </template>
