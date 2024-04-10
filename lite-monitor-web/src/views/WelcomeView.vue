@@ -2,12 +2,12 @@
   <div class="welcome no-select">
     <el-image class="bg" fit="cover" :src="bgImg"/>
     <div class="welcome-title">
-      <div style="font-size: 36px; font-weight: bold">欢迎来到我们的学习论坛~</div>
+      <div style="font-size: 36px; font-weight: bold">欢迎来到 Lite-Monitor 监控终端~</div>
       <div style="margin-top: 12px; font-size: 17px; font-weight: bold">
-        在这里，你可以学习Java、C/C++、Python等主流编程语言的开发技巧和最新技术
+        我们将为您的服务器提供专业的监控服务
       </div>
       <div style="margin-top: 12px; font-size: 17px; font-weight: bold">
-        并与志同道合的小伙伴一起学习，一起进步ヾ(^▽^*)
+        为您的数据安全保驾护航！
       </div>
     </div>
     <div class="sign-container">
