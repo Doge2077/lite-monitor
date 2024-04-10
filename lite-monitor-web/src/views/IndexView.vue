@@ -2,13 +2,13 @@
   <el-container class="main-container">
     <el-header class="main-header">
       <el-image style="height: 40px"
-                src="src/assets/logo/lite-monitor.png"/>
+                src="../src/assets/logo/lite-monitor.png"/>
       <div class="tabs">
         <table-item v-for="item in tabs" :name="item.name"
                     :active="item.id === tab" @click="changePage(item)"/>
         <el-dropdown>
-          <el-avatar class="el-avatar"
-                     src="src/assets/logo/lite-monitor-logo.png"/>
+          <el-avatar class="el-avatar my-avatar"
+                     src="../src/assets/logo/lite-monitor-logo.png"/>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="userLogout">
@@ -83,6 +83,14 @@ function userLogout() {
       display: flex;
       align-items: center;
       justify-content: right;
+
+      .my-avatar:focus-visible {
+          outline: unset;
+      }
+      .my-avatar:hover{
+        cursor: pointer;
+      }
+
     }
   }
 
