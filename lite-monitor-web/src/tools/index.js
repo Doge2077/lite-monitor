@@ -13,4 +13,10 @@ function fitByUnit(value, unit) {
     return `${parseInt(value)} ${units[index]}`
 }
 
-export {fitByUnit}
+function percentageToStatus(percentage) {
+    if (percentage < 50) return 'success'
+    else if (percentage < 80) return 'warning'
+    else return 'exception'
+}
+
+export {fitByUnit, percentageToStatus}

@@ -1,5 +1,5 @@
 <script setup>
-import {fitByUnit} from '@/tools'
+import {fitByUnit, percentageToStatus} from '@/tools'
 import {useClipboard} from "@vueuse/core";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {post} from "@/net";
@@ -67,12 +67,12 @@ function rename() {
       <span style="margin: 0 5px"> {{ data.osMemory.toFixed(1)}} GB</span>
     </div>
     <div class="progress">
-      <span style="margin-right: 10px;">CPU: {{ `${((1 - data.cpuUsage) * 100).toFixed(1)}`}} %</span>
-      <el-progress status="success" :percentage="data.cpuUsage * 100" :stroke-width="5" :show-text="false"/>
+      <span style="margin-right: 10px;">CPU: {{ `${(data.cpuUsage * 100).toFixed(1)}`}} %</span>
+      <el-progress :status="percentageToStatus(data.cpuUsage * 100)" :percentage="data.cpuUsage * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="progress">
       <span style="margin-right: 10px;">内存: {{ `${data.memoryUsage.toFixed(1)}`}} GB({{`${(data.memoryUsage / data.osMemory * 100).toFixed(1)}`}}%)</span>
-      <el-progress status="success" :percentage="data.memoryUsage / data.osMemory * 100" :stroke-width="5" :show-text="false"/>
+      <el-progress :status="percentageToStatus(data.memoryUsage / data.osMemory * 100)" :percentage="data.memoryUsage / data.osMemory * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="network-flow">
       <div>
@@ -109,6 +109,13 @@ function rename() {
   background: #e0e0e0;
   box-shadow:  9px 9px 30px #bebebe,
   -9px -9px 30px #ffffff;
+  transition: .3s;
+  &:hover{
+    cursor: pointer;
+    scale: 1.02;
+  }
+
+
 
   .name{
     font-size: 15px;

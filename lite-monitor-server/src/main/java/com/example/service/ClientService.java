@@ -5,6 +5,7 @@ import com.example.entity.dto.Client;
 import com.example.entity.vo.request.ClientDetailVO;
 import com.example.entity.vo.request.RenameClientVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public interface ClientService extends IService<Client> {
     // 列出所有主机
     List<ClientPreviewVO> listClients();
     void renameClient(RenameClientVO renameClientVO);
+    ClientDetailsVO clientDetails(int clientId);
 }
