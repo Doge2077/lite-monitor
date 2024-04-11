@@ -1,32 +1,10 @@
 <script setup>
-import {fitByUnit} from '@/tools'
-import {useClipboard} from "@vueuse/core";
-import {ElMessage, ElMessageBox} from "element-plus";
-import {post} from "@/net";
+import {fitByUnit, percentageToStatus, rename, copyId} from '@/tools'
+
 const props = defineProps({
   data: Object,
   update: Function
 })
-
-const { copy } = useClipboard()
-const copyId = () => copy(props.data.clientAddress).then(() => ElMessage.success('成功复制到剪切板'))
-
-function rename() {
-  ElMessageBox.prompt('请输入新的服务器主机名称', '修改名称', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    inputValue: props.data.clientName,
-    inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,10}$/,
-    inputErrorMessage: '名称只能包含中英文字符、数字和下划线',
-  }).then(({ value }) => post('/api/monitor/rename',{
-    clientId: props.data.clientId,
-    clientName: value
-  },() => {
-      ElMessage.success('主机名称已更新')
-      props.update()
-    })
-  )
-}
 
 </script>
 
@@ -37,7 +15,7 @@ function rename() {
         <div class="name">
           <span :class="`flag-icon flag-icon-${data.location}`"></span>
           <span style="margin: 0 5px"> {{data.clientName }} </span>
-          <i class="fa-regular fa-pen-to-square interact-item" @click.stop="rename"></i>
+          <i class="fa-regular fa-pen-to-square interact-item" @click.stop="rename(props.data.clientId, props.data.clientName, update)"></i>
         </div>
         <div class="os">
           操作系统：{{`${data.osName} ${data.osVersion}`}}
@@ -55,7 +33,7 @@ function rename() {
     <el-divider style="margin: 10px 0; border-color: white"/>
     <div class="network">
       <span style="margin-right: 10px">公网IP：{{ data.clientAddress }}</span>
-      <i class="fa-regular fa-copy interact-item" @click.stop="copyId" style="color: dodgerblue"></i>
+      <i class="fa-regular fa-copy interact-item" @click.stop="copyId(props)" style="color: dodgerblue"></i>
     </div>
     <div class="cpu">
       <span style="margin-right: 10px">处理器：{{ data.cpuName }}</span>
@@ -67,12 +45,12 @@ function rename() {
       <span style="margin: 0 5px"> {{ data.osMemory.toFixed(1)}} GB</span>
     </div>
     <div class="progress">
-      <span style="margin-right: 10px;">CPU: {{ `${((1 - data.cpuUsage) * 100).toFixed(1)}`}} %</span>
-      <el-progress status="success" :percentage="data.cpuUsage * 100" :stroke-width="5" :show-text="false"/>
+      <span style="margin-right: 10px;">CPU: {{ `${(data.cpuUsage * 100).toFixed(1)}`}} %</span>
+      <el-progress :status="percentageToStatus(data.cpuUsage * 100)" :percentage="data.cpuUsage * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="progress">
       <span style="margin-right: 10px;">内存: {{ `${data.memoryUsage.toFixed(1)}`}} GB({{`${(data.memoryUsage / data.osMemory * 100).toFixed(1)}`}}%)</span>
-      <el-progress status="success" :percentage="data.memoryUsage / data.osMemory * 100" :stroke-width="5" :show-text="false"/>
+      <el-progress :status="percentageToStatus(data.memoryUsage / data.osMemory * 100)" :percentage="data.memoryUsage / data.osMemory * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="network-flow">
       <div>
@@ -109,6 +87,13 @@ function rename() {
   background: #e0e0e0;
   box-shadow:  9px 9px 30px #bebebe,
   -9px -9px 30px #ffffff;
+  transition: .3s;
+  &:hover{
+    cursor: pointer;
+    scale: 1.02;
+  }
+
+
 
   .name{
     font-size: 15px;

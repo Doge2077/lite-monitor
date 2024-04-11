@@ -6,7 +6,9 @@ import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
 import com.example.entity.vo.request.ClientDetailVO;
 import com.example.entity.vo.request.RenameClientVO;
+import com.example.entity.vo.request.RenameNodeVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
@@ -105,7 +107,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
             ClientPreviewVO clientPreviewVO = client.asViewObject(ClientPreviewVO.class);
             BeanUtils.copyProperties(this.clientDetailMapper.selectById(client.getClientId()), clientPreviewVO);
             RuntimeDetailVO runtimeDetailVO = this.currentRuntime.get(client.getClientId());
-            if (runtimeDetailVO != null && System.currentTimeMillis() - runtimeDetailVO.getTimestamp() < 30 * 1000) {
+            if (this.isOnline(runtimeDetailVO)) {
                 BeanUtils.copyProperties(runtimeDetailVO, clientPreviewVO);
                 clientPreviewVO.setOnline(true);
             }
@@ -117,6 +119,20 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public void renameClient(RenameClientVO renameClientVO) {
         this.update(Wrappers.<Client>update().eq("client_id", renameClientVO.getClientId()).set("client_name", renameClientVO.getClientName()));
         this.initClientCache();
+    }
+
+    @Override
+    public void renameNode(RenameNodeVO renameNodeVO) {
+        this.update(Wrappers.<Client>update().eq("client_id", renameNodeVO.getClientId()).set("node", renameNodeVO.getNode()).set("location",renameNodeVO.getLocation()));
+        this.initClientCache();
+    }
+
+    @Override
+    public ClientDetailsVO clientDetails(int clientId) {
+        ClientDetailsVO clientDetailsVO = this.clientIdCache.get(clientId).asViewObject(ClientDetailsVO.class);
+        BeanUtils.copyProperties(clientDetailMapper.selectById(clientId), clientDetailsVO);
+        clientDetailsVO.setOnline(this.isOnline(currentRuntime.get(clientId)));
+        return clientDetailsVO;
     }
 
     private void updateCache(Client client) {
@@ -137,6 +153,10 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         }
         log.info("生成 Token：{}", token);
         return token.toString();
+    }
+
+    private Boolean isOnline(RuntimeDetailVO runtimeDetailVO) {
+        return runtimeDetailVO != null && System.currentTimeMillis() - runtimeDetailVO.getTimestamp() < 30 * 1000;
     }
 
 }
