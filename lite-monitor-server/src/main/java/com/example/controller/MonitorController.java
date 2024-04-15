@@ -32,6 +32,7 @@ public class MonitorController {
 
     @PostMapping("/node")
     public RestBean<Void> renameNode(@RequestBody @Valid RenameNodeVO renameNodeVO) {
+        this.clientService.renameNode(renameNodeVO);
         return RestBean.success();
     }
 

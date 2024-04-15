@@ -9,6 +9,6 @@ public class RenameNodeVO {
     Integer clientId;
     @Length(min = 1, max = 20)
     String node;
-    @Pattern(regexp = "(cn|hk|jp|us|sg|kr|de|tw|au|ua|pl|my|ar|bl|ca|gb|ru|by)")
+    @Pattern(regexp = "(cn|hk|jp|us|sg|kr|de|tw)")
     String location;
 }
