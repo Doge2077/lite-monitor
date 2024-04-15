@@ -10,6 +10,7 @@ import com.example.entity.vo.request.RenameNodeVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
+import com.example.entity.vo.response.RuntimeHistoryVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
@@ -133,6 +134,19 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         BeanUtils.copyProperties(clientDetailMapper.selectById(clientId), clientDetailsVO);
         clientDetailsVO.setOnline(this.isOnline(currentRuntime.get(clientId)));
         return clientDetailsVO;
+    }
+
+    @Override
+    public RuntimeHistoryVO clientRuntimeDetailsHistory(int clientId) {
+        RuntimeHistoryVO runtimeHistoryVO = this.influxDbUtils.readRuntimeData(clientId);
+        ClientDetail clientDetail = this.clientDetailMapper.selectById(clientId);
+        BeanUtils.copyProperties(clientDetail, runtimeHistoryVO);
+        return runtimeHistoryVO;
+    }
+
+    @Override
+    public RuntimeDetailVO clientRuntimeDetailsNow(int clientId) {
+        return this.currentRuntime.get(clientId);
     }
 
     private void updateCache(Client client) {

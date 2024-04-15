@@ -1,7 +1,7 @@
 <script setup>
-import {reactive, watch} from "vue";
+import {computed, reactive, watch} from "vue";
 import {get, post} from "@/net";
-import {copyId, rename} from "@/tools";
+import {copyId, fitByUnit, percentageToStatus, rename} from "@/tools";
 import {ElMessage} from "element-plus";
 
 const locations = [
@@ -22,7 +22,9 @@ const props = defineProps({
 
 const details = reactive({
   base: {},
-  runtime: {},
+  runtime: {
+    list: []
+  },
   editNode: false
 })
 
@@ -57,9 +59,22 @@ function updateDetails() {
 const init = clientId =>{
     if (clientId !== -1) {
       details.base = {}
+      details.runtime = { list: [] }
       get(`/api/monitor/details?clientId=${clientId}`, data => Object.assign(details.base, data))
+      get(`/api/monitor/runtime-history?clientId=${clientId}`, data => Object.assign(details.runtime, data))
     }
 }
+
+setInterval(() => {
+  if (props.clientId !== -1 && details.runtime) {
+    get(`/api/monitor/runtime-now?clientId=${props.clientId}`, data => {
+      details.runtime.list.splice(0, 1)
+      details.runtime.list.push(data)
+    })
+  }
+}, 1000)
+
+const now = computed(() => details.runtime.list[details.runtime.list.length - 1])
 
 watch(() => props.clientId, init, {immediate: true})
 
@@ -145,26 +160,27 @@ watch(() => props.clientId, init, {immediate: true})
         实时监控信息
       </div>
       <el-divider style="margin: 10px 0"/>
-      <div v-if="details.base.online">
-        <div style="display: flex">
-          <el-progress type="dashboard" :width="100" :percentage="20" status="success">
+      <div v-if="details.base.online" v-loading="!details.runtime.list.length"
+          style="min-height: 200px">
+        <div style="display: flex" v-if="details.runtime.list.length">
+          <el-progress type="dashboard" :width="100" :percentage="now.cpuUsage * 100" :status="percentageToStatus(now.cpuUsage * 100)">
             <div style="font-size: 17px; font-weight: bold; color: initial">CPU</div>
-            <div style="font-size: 13px; color: grey; margin-top: 5px">20%</div>
+            <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.cpuUsage * 100).toFixed(1)}}%</div>
           </el-progress>
           <el-progress style="margin-left: 20px"
-                       type="dashboard" :width="100" :percentage="60" status="success">
+                       type="dashboard" :width="100" :percentage="now.memoryUsage / details.base.osMemory * 100" :status="percentageToStatus(now.memoryUsage / details.base.osMemory * 100)">
             <div style="font-size: 17px; font-weight: bold; color: initial">内存</div>
-            <div style="font-size: 13px; color: grey; margin-top: 5px">28.6GB</div>
+            <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.memoryUsage * 100).toFixed(1)}}GB</div>
           </el-progress>
           <div style="flex: 1; margin-left: 30px; display: flex; flex-direction: column; height: 80px">
             <div style="flex: 1; font-size: 14px">
               <div>实时网络速度</div>
               <div>
                 <i style="color: orange" class="fa-solid fa-arrow-up"></i>
-                <span>{{`20KB/s`}}</span>
+                <span>{{ `${fitByUnit(now.networkUpload, 'KB')}/s` }}</span>
                 <el-divider direction="vertical"/>
                 <i style="color: dodgerblue" class="fa-solid fa-arrow-down"></i>
-                <span>{{`0KB/s`}}</span>
+                <span>{{ `${fitByUnit(now.networkDownload, 'KB')}/s` }}</span>
               </div>
             </div>
             <div>
@@ -173,9 +189,9 @@ watch(() => props.clientId, init, {immediate: true})
                   <i class="fa-solid fa-hard-drive"></i>
                   <span>磁盘总容量</span>
                 </div>
-                <div>6.6 GB /  40.0 GB</div>
+                <div>{{now.diskUsage.toFixed(1)}} GB /  {{details.base.diskMemory.toFixed(1)}} GB</div>
               </div>
-              <el-progress type="line" status="success" :percentage="24" :show-text="false"/>
+              <el-progress type="line" :status="percentageToStatus(now.diskUsage / details.base.diskMemory)" :percentage="24" :show-text="false"/>
             </div>
           </div>
         </div>

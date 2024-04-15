@@ -132,16 +132,16 @@ const onValidate = (prop, isValid) => {
 const validateEmail = () => {
     coldTime.value = 60
     get(`/api/auth/ask-code?email=${form.email}&type=reset`, () => {
-        ElMessage.success(`验证码已发送到邮箱: ${form.email}，请注意查收`)
-        const handle = setInterval(() => {
-          coldTime.value--
-          if(coldTime.value === 0) {
-            clearInterval(handle)
-          }
-        }, 1000)
+      ElMessage.success(`验证码已发送到邮箱: ${form.email}，请注意查收`)
+      const handle = setInterval(() => {
+        coldTime.value--
+        if (coldTime.value === 0) {
+          clearInterval(handle)
+        }
+      }, 1000)
     }, (message) => {
-        ElMessage.warning(message)
-        coldTime.value = 0
+      ElMessage.warning(message)
+      coldTime.value = 0
     })
 }
 
