@@ -5,6 +5,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.example.entity.ConnectionConfig;
 import org.example.utils.NetUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
@@ -21,6 +22,7 @@ public class ServerConfiguration {
     @Resource
     NetUtils netUtils;
 
+    @Bean
     public ConnectionConfig connectionConfig() {
         log.info("正在加载服务端连接配置 ...");
         ConnectionConfig connectionConfig = this.getConfigurationFromFile();

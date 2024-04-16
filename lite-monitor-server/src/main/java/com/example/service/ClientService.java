@@ -31,4 +31,6 @@ public interface ClientService extends IService<Client> {
     RuntimeHistoryVO clientRuntimeDetailsHistory(int clientId);
     // 实时数据监控
     RuntimeDetailVO clientRuntimeDetailsNow(int clientId);
+    // 删除 Client
+    void deleteClient(int clientId);
 }

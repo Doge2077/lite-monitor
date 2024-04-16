@@ -63,7 +63,7 @@ public class NetUtils {
     public void updateRuntimeDetail(RuntimeDetail runtimeDetail) {
         Response response = this.doPost("/runtime", runtimeDetail);
         if (!response.success()) {
-            log.error("客户端运行时数据上报失败：{}", response.msg());
+            log.error("客户端运行时数据上报失败：{}", response);
         }
     }
 
