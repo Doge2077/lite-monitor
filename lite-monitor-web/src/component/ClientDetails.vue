@@ -3,6 +3,7 @@ import {computed, reactive, watch} from "vue";
 import {get, post} from "@/net";
 import {copyId, fitByUnit, percentageToStatus, rename} from "@/tools";
 import {ElMessage} from "element-plus";
+import RuntimeHistory from "@/component/RuntimeHistory.vue";
 
 const locations = [
   {name: 'cn', desc: '中国大陆'},
@@ -68,7 +69,9 @@ const init = clientId =>{
 setInterval(() => {
   if (props.clientId !== -1 && details.runtime) {
     get(`/api/monitor/runtime-now?clientId=${props.clientId}`, data => {
-      details.runtime.list.splice(0, 1)
+      if (details.runtime.list.length >= 3600) {
+        details.runtime.list.splice(0, 1)
+      }
       details.runtime.list.push(data)
     })
   }
@@ -81,124 +84,128 @@ watch(() => props.clientId, init, {immediate: true})
 </script>
 
 <template>
-  <div class="client-details" v-loading="Object.keys(details.base).length === 0">
-    <div v-if="Object.keys(details.base).length">
-      <div class="title">
-        <i class="fa-solid fa-server"></i>
-        服务器详情信息
-      </div>
-      <el-divider style="margin: 10px 0"/>
-      <div class="details-list">
-        <div>
-          <span>服务器 ID</span>
-          <span>{{ details.base.clientId }}</span>
+  <el-scrollbar>
+    <div class="client-details" v-loading="Object.keys(details.base).length === 0">
+      <div v-if="Object.keys(details.base).length">
+        <div class="title">
+          <i class="fa-solid fa-server"></i>
+          服务器详情信息
         </div>
-        <div>
-          <span>服务器名称</span>
-          <span>{{ details.base.clientName }}</span>&nbsp;
-          <i class="fa-regular fa-pen-to-square interact-item" @click.stop="rename(details.base.clientId, details.base.clientName, updateDetails)"></i>
-        </div>
-        <div>
-          <span>运行状态</span>
-          <span>
+        <el-divider style="margin: 10px 0"/>
+        <div class="details-list">
+          <div>
+            <span>服务器 ID</span>
+            <span>{{ details.base.clientId }}</span>
+          </div>
+          <div>
+            <span>服务器名称</span>
+            <span>{{ details.base.clientName }}</span>&nbsp;
+            <i class="fa-regular fa-pen-to-square interact-item" @click.stop="rename(details.base.clientId, details.base.clientName, updateDetails)"></i>
+          </div>
+          <div>
+            <span>运行状态</span>
+            <span>
             <i style="color: #18cb18" class="fa-regular fa-circle-play" v-if="details.base.online"></i>
             <i style="color: red" class="fa-regular fa-circle-stop" v-else></i>
             {{ details.base.online ? '运行中' : '离线' }}
           </span>
-        </div>
-        <div v-if="!details.editNode">
-          <span>服务器节点</span>
-          <span :class="`flag-icon flag-icon-${details.base.location}`"></span>&nbsp;
-          <span>{{details.base.node}}</span> &nbsp;
-          <i @click.stop="enableNodeEdit" class="fa-solid fa-pen-to-square interact-item"/>
-        </div>
-        <div v-else>
-          <span>服务器节点</span>
-          <div style="display: inline-block; height: 15px">
-            <div style="display: flex">
-              <el-select v-model="nodeEdit.location" style="width: 80px" size="small">
-                <el-option v-for="item in locations" :value="item.name">
-                  <span :class="`flag-icon flag-icon-${item.name}`"></span>&nbsp;
-                  {{item.desc}}
-                </el-option>
-              </el-select>
-              <el-input v-model="nodeEdit.name" style="margin-left: 10px"
-                        size="small" placeholder="请输入节点名称"/>
-              <div style="margin-left: 10px">
-                <i @click.stop="submitNodeEdit" class="fa-solid fa-check interact-item"/>
+          </div>
+          <div v-if="!details.editNode">
+            <span>服务器节点</span>
+            <span :class="`flag-icon flag-icon-${details.base.location}`"></span>&nbsp;
+            <span>{{details.base.node}}</span> &nbsp;
+            <i @click.stop="enableNodeEdit" class="fa-solid fa-pen-to-square interact-item"/>
+          </div>
+          <div v-else>
+            <span>服务器节点</span>
+            <div style="display: inline-block; height: 15px">
+              <div style="display: flex">
+                <el-select v-model="nodeEdit.location" style="width: 80px" size="small">
+                  <el-option v-for="item in locations" :value="item.name">
+                    <span :class="`flag-icon flag-icon-${item.name}`"></span>&nbsp;
+                    {{item.desc}}
+                  </el-option>
+                </el-select>
+                <el-input v-model="nodeEdit.name" style="margin-left: 10px"
+                          size="small" placeholder="请输入节点名称"/>
+                <div style="margin-left: 10px">
+                  <i @click.stop="submitNodeEdit" class="fa-solid fa-check interact-item"/>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div>
-          <span>公网 IP</span>
-          <span>
+          <div>
+            <span>公网 IP</span>
+            <span>
             {{ details.base.clientAddress }}
             <i class="fa-regular fa-copy interact-item" @click.stop="copyId(details.base)" style="color: dodgerblue"></i>
           </span>
-        </div>
-        <div>
-          <span>处理器</span>
-          <span>{{ details.base.cpuName }}</span>
-        </div>
-        <div>
-          <span>硬件配置信息</span>
-          <span>
+          </div>
+          <div>
+            <span>处理器</span>
+            <span>{{ details.base.cpuName }}</span>
+          </div>
+          <div>
+            <span>硬件配置信息</span>
+            <span>
             <i class="fa-solid fa-microchip"></i>
             {{details.base.cpuCores}} 核 CPU |
             <i class="fa-solid fa-memory"></i>
             {{ details.base.osMemory.toFixed(1)}} GB 内存
           </span>
-        </div>
-        <div>
-          <span>操作系统</span>
-          <span> {{`${details.base.osName} ${details.base.osVersion}`}} </span>
-        </div>
-      </div>
-      <div class="title">
-        <i class="fa-solid fa-gauge-high"></i>
-        实时监控信息
-      </div>
-      <el-divider style="margin: 10px 0"/>
-      <div v-if="details.base.online" v-loading="!details.runtime.list.length"
-          style="min-height: 200px">
-        <div style="display: flex" v-if="details.runtime.list.length">
-          <el-progress type="dashboard" :width="100" :percentage="now.cpuUsage * 100" :status="percentageToStatus(now.cpuUsage * 100)">
-            <div style="font-size: 17px; font-weight: bold; color: initial">CPU</div>
-            <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.cpuUsage * 100).toFixed(1)}}%</div>
-          </el-progress>
-          <el-progress style="margin-left: 20px"
-                       type="dashboard" :width="100" :percentage="now.memoryUsage / details.base.osMemory * 100" :status="percentageToStatus(now.memoryUsage / details.base.osMemory * 100)">
-            <div style="font-size: 17px; font-weight: bold; color: initial">内存</div>
-            <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.memoryUsage * 100).toFixed(1)}}GB</div>
-          </el-progress>
-          <div style="flex: 1; margin-left: 30px; display: flex; flex-direction: column; height: 80px">
-            <div style="flex: 1; font-size: 14px">
-              <div>实时网络速度</div>
-              <div>
-                <i style="color: orange" class="fa-solid fa-arrow-up"></i>
-                <span>{{ `${fitByUnit(now.networkUpload, 'KB')}/s` }}</span>
-                <el-divider direction="vertical"/>
-                <i style="color: dodgerblue" class="fa-solid fa-arrow-down"></i>
-                <span>{{ `${fitByUnit(now.networkDownload, 'KB')}/s` }}</span>
-              </div>
-            </div>
-            <div>
-              <div style="font-size: 13px; display: flex; justify-content: space-between">
-                <div>
-                  <i class="fa-solid fa-hard-drive"></i>
-                  <span>磁盘总容量</span>
-                </div>
-                <div>{{now.diskUsage.toFixed(1)}} GB /  {{details.base.diskMemory.toFixed(1)}} GB</div>
-              </div>
-              <el-progress type="line" :status="percentageToStatus(now.diskUsage / details.base.diskMemory)" :percentage="24" :show-text="false"/>
-            </div>
+          </div>
+          <div>
+            <span>操作系统</span>
+            <span> {{`${details.base.osName} ${details.base.osVersion}`}} </span>
           </div>
         </div>
+        <div class="title">
+          <i class="fa-solid fa-gauge-high"></i>
+          实时监控信息
+        </div>
+        <el-divider style="margin: 10px 0"/>
+        <div v-if="details.base.online" v-loading="!details.runtime.list.length"
+             style="min-height: 200px">
+          <div style="display: flex" v-if="details.runtime.list.length">
+            <el-progress type="dashboard" :width="100" :percentage="now.cpuUsage * 100" :status="percentageToStatus(now.cpuUsage * 100)">
+              <div style="font-size: 17px; font-weight: bold; color: initial">CPU</div>
+              <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.cpuUsage * 100).toFixed(1)}}%</div>
+            </el-progress>
+            <el-progress style="margin-left: 20px"
+                         type="dashboard" :width="100" :percentage="now.memoryUsage / details.base.osMemory * 100" :status="percentageToStatus(now.memoryUsage / details.base.osMemory * 100)">
+              <div style="font-size: 17px; font-weight: bold; color: initial">内存</div>
+              <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.memoryUsage).toFixed(1)}}GB</div>
+              <div style="font-size: 13px; color: grey; margin-top: 5px">{{`${(now.memoryUsage / details.base.osMemory * 100).toFixed(1)}`}}%</div>
+            </el-progress>
+            <div style="flex: 1; margin-left: 30px; display: flex; flex-direction: column; height: 80px">
+              <div style="flex: 1; font-size: 14px">
+                <div>实时网络速度</div>
+                <div>
+                  <i style="color: orange" class="fa-solid fa-arrow-up"></i>
+                  <span>{{ `${fitByUnit(now.networkUpload, 'KB')}/s` }}</span>
+                  <el-divider direction="vertical"/>
+                  <i style="color: dodgerblue" class="fa-solid fa-arrow-down"></i>
+                  <span>{{ `${fitByUnit(now.networkDownload, 'KB')}/s` }}</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 13px; display: flex; justify-content: space-between">
+                  <div>
+                    <i class="fa-solid fa-hard-drive"></i>
+                    <span>磁盘总容量</span>
+                  </div>
+                  <div>{{now.diskUsage.toFixed(1)}} GB /  {{details.base.diskMemory.toFixed(1)}} GB</div>
+                </div>
+                <el-progress type="line" :status="percentageToStatus(now.diskUsage / details.base.diskMemory)" :percentage="24" :show-text="false"/>
+              </div>
+            </div>
+          </div>
+          <runtime-history :data="details.runtime.list"/>
+        </div>
+        <el-empty description="服务器已离线" v-else/>
       </div>
-      <el-empty description="服务器已离线" v-else/>
     </div>
-  </div>
+  </el-scrollbar>
 </template>
 
 <style scoped>
