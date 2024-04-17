@@ -5,6 +5,7 @@ import {get} from '@/net'
 import ClientDetails from "@/component/ClientDetails.vue";
 import {Plus} from "@element-plus/icons-vue";
 import RegisterCard from "@/component/RegisterCard.vue";
+import {useRoute} from "vue-router";
 const list = ref([])
 
 const locations = [
@@ -20,6 +21,8 @@ const locations = [
 
 const checkedNodes = ref([])
 
+const route = useRoute()
+
 const clientList = computed(() => {
   if(checkedNodes.value.length === 0) {
     return list.value
@@ -28,7 +31,11 @@ const clientList = computed(() => {
   }
 })
 
-const updateList = () => get('/api/monitor/list', data => list.value = data)
+const updateList = () => {
+  if (route.name === 'manage') {
+    get('/api/monitor/list', data => list.value = data)
+  }
+}
 setInterval(updateList, 1000)
 updateList()
 
