@@ -174,7 +174,7 @@ watch(() => props.clientId, init, {immediate: true})
             <i class="fa-solid fa-microchip"></i>
             {{details.base.cpuCores}} 核 CPU |
             <i class="fa-solid fa-memory"></i>
-            {{ details.base.osMemory.toFixed(1)}} GB 内存
+            {{ details.base.osMemory?.toFixed(1) ?? '未知'}} GB 内存
           </span>
           </div>
           <div>
@@ -192,13 +192,13 @@ watch(() => props.clientId, init, {immediate: true})
           <div style="display: flex" v-if="details.runtime.list.length">
             <el-progress type="dashboard" :width="100" :percentage="now.cpuUsage * 100" :status="percentageToStatus(now.cpuUsage * 100)">
               <div style="font-size: 17px; font-weight: bold; color: initial">CPU</div>
-              <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.cpuUsage * 100).toFixed(1)}}%</div>
+              <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.cpuUsage * 100)?.toFixed(1) ?? '未知'}}%</div>
             </el-progress>
             <el-progress style="margin-left: 20px"
                          type="dashboard" :width="100" :percentage="now.memoryUsage / details.base.osMemory * 100" :status="percentageToStatus(now.memoryUsage / details.base.osMemory * 100)">
               <div style="font-size: 17px; font-weight: bold; color: initial">内存</div>
-              <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.memoryUsage).toFixed(1)}}GB</div>
-              <div style="font-size: 13px; color: grey; margin-top: 5px">{{`${(now.memoryUsage / details.base.osMemory * 100).toFixed(1)}`}}%</div>
+              <div style="font-size: 13px; color: grey; margin-top: 5px">{{(now.memoryUsage)?.toFixed(1) ?? '未知'}}GB</div>
+              <div style="font-size: 13px; color: grey; margin-top: 5px">{{`${(now.memoryUsage / details.base.osMemory * 100)?.toFixed(1) ?? '未知'}`}}%</div>
             </el-progress>
             <div style="flex: 1; margin-left: 30px; display: flex; flex-direction: column; height: 80px">
               <div style="flex: 1; font-size: 14px">
@@ -217,7 +217,7 @@ watch(() => props.clientId, init, {immediate: true})
                     <i class="fa-solid fa-hard-drive"></i>
                     <span>磁盘总容量</span>
                   </div>
-                  <div>{{now.diskUsage.toFixed(1)}} GB /  {{details.base.diskMemory.toFixed(1)}} GB</div>
+                  <div>{{now.diskUsage?.toFixed(1) ?? '未知'}} GB /  {{details.base.diskMemory?.toFixed(1) ?? '未知'}} GB</div>
                 </div>
                 <el-progress type="line" :status="percentageToStatus(now.diskUsage / details.base.diskMemory)" :percentage="24" :show-text="false"/>
               </div>

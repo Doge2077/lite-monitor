@@ -42,14 +42,14 @@ const props = defineProps({
       <i class="fa-solid fa-microchip"></i>
       <span style="margin: 0 5px"> {{data.cpuCores}} CPU</span>
       <i class="fa-solid fa-memory"></i>
-      <span style="margin: 0 5px"> {{ data.osMemory.toFixed(1)}} GB</span>
+      <span style="margin: 0 5px"> {{ data.osMemory?.toFixed(1) ?? '未知'}} GB</span>
     </div>
     <div class="progress">
-      <span style="margin-right: 10px;">CPU: {{ `${(data.cpuUsage * 100).toFixed(1)}`}} %</span>
+      <span style="margin-right: 10px;">CPU: {{ `${(data.cpuUsage * 100)?.toFixed(1) ?? '未知'}`}} %</span>
       <el-progress :status="percentageToStatus(data.cpuUsage * 100)" :percentage="data.cpuUsage * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="progress">
-      <span style="margin-right: 10px;">内存: {{ `${(data.memoryUsage).toFixed(1)}`}} GB({{`${(data.memoryUsage / data.osMemory * 100).toFixed(1)}`}}%)</span>
+      <span style="margin-right: 10px;">内存: {{ `${(data.memoryUsage)?.toFixed(1) ?? '未知'}`}} GB({{`${(data.memoryUsage / data.osMemory * 100)?.toFixed(1) ?? '未知'}`}}%)</span>
       <el-progress :status="percentageToStatus(data.memoryUsage / data.osMemory * 100)" :percentage="data.memoryUsage / data.osMemory * 100" :stroke-width="5" :show-text="false"/>
     </div>
     <div class="network-flow">
