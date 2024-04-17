@@ -10,7 +10,7 @@ import lombok.NonNull;
 public class ClientDetailVO {
 
     // 客户端系统信息
-    // 客户端 ip 地址
+    // 客户端 clientAddress 地址
     @NonNull
     String clientAddress;
     // 系统架构

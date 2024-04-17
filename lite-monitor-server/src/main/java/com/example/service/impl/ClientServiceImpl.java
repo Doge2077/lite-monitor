@@ -10,6 +10,7 @@ import com.example.entity.vo.request.RenameNodeVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
+import com.example.entity.vo.response.ClientSimpleVO;
 import com.example.entity.vo.response.RuntimeHistoryVO;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
@@ -115,6 +116,15 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
                 clientPreviewVO.setOnline(true);
             }
             return clientPreviewVO;
+        }).toList();
+    }
+
+    @Override
+    public List<ClientSimpleVO> listSimpleList() {
+        return this.clientIdCache.values().stream().map(client -> {
+            ClientSimpleVO clientSimpleVO = client.asViewObject(ClientSimpleVO.class);
+            BeanUtils.copyProperties(this.clientDetailMapper.selectById(clientSimpleVO.getClientId()), clientSimpleVO);
+            return clientSimpleVO;
         }).toList();
     }
 

@@ -12,7 +12,7 @@ public class ClientDetail {
     @TableId
     Integer clientId;
     // 客户端系统信息
-    // 客户端 ip 地址
+    // 客户端 clientAddress 地址
     String clientAddress;
     // 系统架构
     String osArch;

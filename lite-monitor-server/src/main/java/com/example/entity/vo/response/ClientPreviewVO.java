@@ -9,7 +9,7 @@ public class ClientPreviewVO {
     Boolean online;
     // 主机名
     String clientName;
-    // 客户端 ip 地址
+    // 客户端 clientAddress 地址
     String clientAddress;
     // 操作系统
     String osName;

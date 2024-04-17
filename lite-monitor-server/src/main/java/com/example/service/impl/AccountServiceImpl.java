@@ -153,7 +153,7 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
 
     @Override
     public void deleteSubAccount(int uid) {
-
+        this.removeById(uid);
     }
 
     @Override

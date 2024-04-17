@@ -9,6 +9,7 @@ import com.example.entity.vo.request.RenameNodeVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.entity.vo.response.ClientDetailsVO;
 import com.example.entity.vo.response.ClientPreviewVO;
+import com.example.entity.vo.response.ClientSimpleVO;
 import com.example.entity.vo.response.RuntimeHistoryVO;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public interface ClientService extends IService<Client> {
     Boolean updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client);
     // 列出所有主机
     List<ClientPreviewVO> listClients();
+    List<ClientSimpleVO> listSimpleList();
     void renameClient(RenameClientVO renameClientVO);
     void renameNode(RenameNodeVO renameNodeVO);
     ClientDetailsVO clientDetails(int clientId);

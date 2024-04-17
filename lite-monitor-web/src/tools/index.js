@@ -42,4 +42,20 @@ function rename(clientId, clientName, after) {
 const { copy } = useClipboard()
 const copyId = (data) => copy(data.clientAddress).then(() => ElMessage.success('成功复制到剪切板'))
 
-export {fitByUnit, percentageToStatus, rename, copyId}
+function osNameToIcon(name) {
+    if(name.indexOf('Ubuntu') >= 0)
+        return {icon: 'fa-ubuntu', color: '#db4c1a'}
+    else if(name.indexOf('CentOS') >= 0)
+        return {icon: 'fa-centos', color: '#9dcd30'}
+    else if(name.indexOf('macOS') >= 0)
+        return {icon: 'fa-apple', color: 'grey'}
+    else if(name.indexOf('Windows') >= 0)
+        return {icon: 'fa-windows', color: '#3578b9'}
+    else if(name.indexOf('Debian') >= 0)
+        return {icon: 'fa-debian', color: '#a80836'}
+    else
+        return {icon: 'fa-linux', color: 'grey'}
+}
+
+
+export {fitByUnit, percentageToStatus, rename, copyId, osNameToIcon}
