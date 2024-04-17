@@ -23,4 +23,5 @@ public class Account implements BaseData {
     String email;
     String role;
     Date registerTime;
+    String clients;
 }

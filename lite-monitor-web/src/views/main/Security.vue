@@ -90,7 +90,11 @@ function resetPassword() {
       </div>
     </div>
     <div class="info-card" style="flex: 50%">
-
+      <div class="title"><i class="fa-solid fa-users"></i> 子用户管理</div>
+      <el-divider style="margin: 10px 0"/>
+      <el-empty :image-size="100" description="还没有任何子用户哦">
+        <el-button :icon="Plus" type="primary" plain>添加子用户</el-button>
+      </el-empty>
     </div>
   </div>
 </template>
