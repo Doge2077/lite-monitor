@@ -85,8 +85,8 @@ const props = defineProps({
   box-sizing: border-box;
   color: #6b6b6b;
   background: #e0e0e0;
-  box-shadow:  9px 9px 30px #bebebe,
-  -9px -9px 30px #ffffff;
+  box-shadow:  20px 20px 60px #bebebe,
+  -20px -20px 60px #ffffff;
   transition: .3s;
   &:hover{
     cursor: pointer;

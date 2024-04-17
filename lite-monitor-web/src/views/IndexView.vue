@@ -20,7 +20,6 @@
         </el-dropdown>
       </div>
     </el-header>
-
     <el-main class="main-content">
       <router-view v-slot="{ Component }">
         <transition name="el-fade-in-linear" mode="out-in">
@@ -67,6 +66,7 @@ function userLogout() {
 <style scoped>
 
 .main-container{
+
   height: 100vh;
   width: 100vw;
   .main-header{
@@ -98,7 +98,20 @@ function userLogout() {
 
   .main-content{
     height: 100%;
-    background-color: #f5f5f5;
+
+  }
+
+  .main-content::before{
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background: #f5f5f5 url("@/assets/img/manage-background.jpg");
+    filter:blur(2px);
+    z-index:-1;
+    background-size: cover;
   }
 }
 

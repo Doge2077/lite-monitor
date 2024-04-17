@@ -9,22 +9,19 @@ import oshi.hardware.CentralProcessor;
 import oshi.hardware.HWDiskStore;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
-import oshi.hardware.platform.linux.LinuxNetworkIF;
-import oshi.software.os.NetworkParams;
 import oshi.software.os.OperatingSystem;
+import oshi.util.Util;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Properties;
+import java.util.*;
 
 @Slf4j
 @Component
 public class MonitorUtils {
 
-    private static final double STATISTIC_TIME = 0.5;
+    private static final double STATISTIC_TIME = 1.0;
 
     private static final double DISK_BASE = 1024.0;
 
@@ -85,8 +82,7 @@ public class MonitorUtils {
                 double networkDownload = networkIF.getBytesRecv();
                 double diskRead = osHardwareInfo.getDiskStores().stream().mapToLong(HWDiskStore::getReadBytes).sum();
                 double diskWrite = osHardwareInfo.getDiskStores().stream().mapToLong(HWDiskStore::getWriteBytes).sum();
-                long[] cpuUsage = centralProcessor.getSystemCpuLoadTicks();
-                // 时间段统计 0.5s 的数据量取平均值
+                // 时间段统计 1s 的数据量取平均值
                 Thread.sleep((long) STATISTIC_TIME * 1000);
                 networkIF = this.getClientAddress(osHardwareInfo);
                 networkUpload = (networkIF.getBytesSent() - networkUpload) / STATISTIC_TIME;
@@ -99,7 +95,7 @@ public class MonitorUtils {
                 ).sum() / DISK_GB;
                 return new RuntimeDetail()
                         .setTimestamp(new Date().getTime())
-                        .setCpuUsage(this.getCpuUsage(centralProcessor, cpuUsage))
+                        .setCpuUsage(this.getCpuUsage(centralProcessor))
                         .setMemoryUsage(memoryUsage)
                         .setDiskUsage(diskUsage)
                         .setNetworkUpload(networkUpload / DISK_BASE)
@@ -108,30 +104,30 @@ public class MonitorUtils {
                         .setDiskWrite(diskWrite / DISK_MB);
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
         }
+        return null;
     }
 
-    private double getCpuUsage(CentralProcessor processor, long[] prevTicks) {
+    private double getCpuUsage(CentralProcessor processor) {
+        long[] prevTicks = processor.getSystemCpuLoadTicks();
+        long[][] prevProcTicks = processor.getProcessorCpuLoadTicks();
+        Util.sleep(1000);
         long[] ticks = processor.getSystemCpuLoadTicks();
-        long nice = ticks[CentralProcessor.TickType.NICE.getIndex()]
-            - prevTicks[CentralProcessor.TickType.NICE.getIndex()];
-        long irq = ticks[CentralProcessor.TickType.IRQ.getIndex()]
-            - prevTicks[CentralProcessor.TickType.IRQ.getIndex()];
-        long softIrq = ticks[CentralProcessor.TickType.SOFTIRQ.getIndex()]
-            - prevTicks[CentralProcessor.TickType.SOFTIRQ.getIndex()];
-        long steal = ticks[CentralProcessor.TickType.STEAL.getIndex()]
-            - prevTicks[CentralProcessor.TickType.STEAL.getIndex()];
-        long cSys = ticks[CentralProcessor.TickType.SYSTEM.getIndex()]
-            - prevTicks[CentralProcessor.TickType.SYSTEM.getIndex()];
-        long cUser = ticks[CentralProcessor.TickType.USER.getIndex()]
-            - prevTicks[CentralProcessor.TickType.USER.getIndex()];
-        long ioWait = ticks[CentralProcessor.TickType.IOWAIT.getIndex()]
-            - prevTicks[CentralProcessor.TickType.IOWAIT.getIndex()];
-        long idle = ticks[CentralProcessor.TickType.IDLE.getIndex()]
-            - prevTicks[CentralProcessor.TickType.IDLE.getIndex()];
-        Long totalCpu = cUser + nice + cSys + idle + ioWait + irq + softIrq + steal;
-        return (cSys + cUser) * 1.0 / totalCpu;
+        long user = ticks[CentralProcessor.TickType.USER.getIndex()] - prevTicks[CentralProcessor.TickType.USER.getIndex()];
+        long nice = ticks[CentralProcessor.TickType.NICE.getIndex()] - prevTicks[CentralProcessor.TickType.NICE.getIndex()];
+        long sys = ticks[CentralProcessor.TickType.SYSTEM.getIndex()] - prevTicks[CentralProcessor.TickType.SYSTEM.getIndex()];
+        long idle = ticks[CentralProcessor.TickType.IDLE.getIndex()] - prevTicks[CentralProcessor.TickType.IDLE.getIndex()];
+        long iowait = ticks[CentralProcessor.TickType.IOWAIT.getIndex()] - prevTicks[CentralProcessor.TickType.IOWAIT.getIndex()];
+        long irq = ticks[CentralProcessor.TickType.IRQ.getIndex()] - prevTicks[CentralProcessor.TickType.IRQ.getIndex()];
+        long softirq = ticks[CentralProcessor.TickType.SOFTIRQ.getIndex()] - prevTicks[CentralProcessor.TickType.SOFTIRQ.getIndex()];
+        long steal = ticks[CentralProcessor.TickType.STEAL.getIndex()] - prevTicks[CentralProcessor.TickType.STEAL.getIndex()];
+        long totalCpu = user + nice + sys + idle + iowait + irq + softirq + steal;
+
+        double[] load = processor.getProcessorCpuLoadBetweenTicks(prevProcTicks);
+        double total = Arrays.stream(load).sum();
+        return total / load.length + totalCpu / 100000.0;
     }
+
 
 }
