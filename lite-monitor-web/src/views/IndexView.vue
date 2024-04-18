@@ -6,6 +6,14 @@
       <div class="tabs">
         <table-item v-for="item in tabs" :name="item.name"
                     :active="item.id === tab" @click="changePage(item)"/>
+        <div style="text-align: right;line-height: 16px;margin-right: 10px">
+          <div>
+            <el-tag type="success" v-if="store.isAdmin" size="small">管理员</el-tag>
+            <el-tag v-else size="small">子账户</el-tag>
+            {{store.user.username}}
+          </div>
+          <div style="font-size: 13px;color: grey">{{store.user.email}}</div>
+        </div>
         <el-dropdown>
           <el-avatar class="el-avatar my-avatar"
                      src="../src/assets/logo/lite-monitor-logo.png"/>
@@ -39,8 +47,9 @@ import {Back, Comment} from "@element-plus/icons-vue";
 import TableItem from "@/component/TableItem.vue";
 import {useRoute} from "vue-router";
 import {ref} from "vue";
+import {useStore} from "@/store";
 
-
+const store = useStore()
 const route = useRoute()
 const tabs = [
   {id: 1, name: '管理', route: 'manage'},

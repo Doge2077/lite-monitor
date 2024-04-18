@@ -1,5 +1,6 @@
 import axios from "axios";
 import {ElMessage} from "element-plus";
+import {useStore} from "@/store";
 
 const authItemName = "authorize"
 
@@ -74,6 +75,10 @@ function login(username, password, remember, success, failure = defaultFailure){
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
         storeAccessToken(remember, data.token, data.expire)
+        const store = useStore()
+        store.user.role = data.role
+        store.user.username = data.username
+        store.user.email = data.email
         ElMessage.success(`登录成功，欢迎 ${data.username} 来到我们的系统`)
         success(data)
     }, failure)

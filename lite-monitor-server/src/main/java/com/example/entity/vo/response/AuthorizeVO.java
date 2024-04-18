@@ -10,6 +10,7 @@ import java.util.Date;
 @Data
 public class AuthorizeVO {
     String username;
+    String email;
     String role;
     String token;
     Date expire;

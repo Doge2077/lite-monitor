@@ -34,6 +34,10 @@ public record RestBean<T> (long id, int code, T data, String message) {
         return new RestBean<>(requestId(), code, null, message);
     }
 
+    public static <T> RestBean<T> noPermission() {
+        return new RestBean<>(requestId(), 401, null, "权限不足，拒绝访问");
+    }
+
     /**
      * 快速将当前实体转换为JSON字符串格式
      * @return JSON字符串
