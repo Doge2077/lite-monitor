@@ -23,11 +23,6 @@
 <script setup>
 import bgImg from '../assets/img/bg.jpg'
 
-// let max = setInterval(() => {})
-// for (let i = 0; i <= max; i ++) {
-//   clearInterval(i)
-// }
-
 </script>
 
 <style scoped>

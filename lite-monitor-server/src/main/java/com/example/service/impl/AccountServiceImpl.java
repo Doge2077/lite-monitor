@@ -7,6 +7,7 @@ import com.example.entity.dto.Account;
 import com.example.entity.vo.request.ConfirmResetVO;
 import com.example.entity.vo.request.CreateSubAccountVO;
 import com.example.entity.vo.request.EmailResetVO;
+import com.example.entity.vo.request.ModifyEmailVO;
 import com.example.entity.vo.response.SubAccountVO;
 import com.example.mapper.AccountMapper;
 import com.example.service.AccountService;
@@ -135,6 +136,21 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         this.update(Wrappers.<Account>update().eq("id", id)
                 .set("password", this.passwordEncoder.encode(newPass)));
         return true;
+    }
+
+    @Override
+    public String modifyEmail(int uid, ModifyEmailVO emailVO) {
+        String code = getEmailVerifyCode(emailVO.getEmail());
+        if (code == null) return "请先获取验证码";
+        if(!code.equals(emailVO.getCode())) return "验证码错误，请重新输入";
+        this.deleteEmailVerifyCode(emailVO.getEmail());
+        Account account = this.findAccountByNameOrEmail(emailVO.getEmail());
+        if(account != null && account.getId() != uid) return "该邮箱账号已经被其他账号绑定，无法完成操作";
+        this.update()
+                .set("email", emailVO.getEmail())
+                .eq("id", uid)
+                .update();
+        return null;
     }
 
     @Override

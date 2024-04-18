@@ -37,8 +37,12 @@ public class MailQueueListener {
 //                            "您的邮件注册验证码为: "+code+"，有效时间3分钟，为了保障您的账户安全，请勿向他人泄露验证码信息。",
 //                            email);
             case "reset" ->
-                    createMessage("您的密码重置邮件",
-                            "你好，您正在执行重置密码操作，验证码: "+code+"，有效时间3分钟，如非本人操作，请无视。",
+                    createMessage("【Lite-Monitor】密码重置验证邮件",
+                            "尊敬的 Lite-Monitor 用户您好，您正在执行重置密码操作，验证码: "+code+"，有效时间3分钟，如非本人操作，如非本人操作，请登录平台修改密码，以防账号丢失。",
+                            email);
+            case "modify" ->
+                    createMessage("【Lite-Monitor】邮件修改验证邮件",
+                            "尊敬的 Lite-Monitor 用户您好，您正在绑定新的电子邮件地址，验证码: "+code+"，有效时间3分钟，如非本人操作，请登录平台修改密码，以防账号丢失。",
                             email);
             default -> null;
         };

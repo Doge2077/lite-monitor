@@ -3,10 +3,12 @@ package com.example.controller;
 import com.example.entity.RestBean;
 import com.example.entity.vo.request.ChangePasswordVO;
 import com.example.entity.vo.request.CreateSubAccountVO;
+import com.example.entity.vo.request.ModifyEmailVO;
 import com.example.entity.vo.response.SubAccountVO;
 import com.example.service.AccountService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import com.example.utils.Const;
 
@@ -24,6 +26,17 @@ public class UserController {
                                          @RequestAttribute(Const.ATTR_USER_ID) int userId) {
         return this.accountService.changePassword(userId, changePasswordVO.getPassword(), changePasswordVO.getNew_password()) ?
                 RestBean.success() : RestBean.failure(401, "原密码输入错误");
+    }
+
+    @PostMapping("/modify-email")
+    public RestBean<Void> modifyEmail(@RequestAttribute(Const.ATTR_USER_ID) int uid,
+                                      @RequestBody @Valid ModifyEmailVO emailVO) {
+        String result = accountService.modifyEmail(uid, emailVO);
+        if(result == null) {
+            return RestBean.success();
+        } else {
+            return RestBean.failure(401, result);
+        }
     }
 
     @PostMapping("/sub/create")
