@@ -3,14 +3,8 @@ package com.example.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.RuntimeDetail;
-import com.example.entity.vo.request.ClientDetailVO;
-import com.example.entity.vo.request.RenameClientVO;
-import com.example.entity.vo.request.RenameNodeVO;
-import com.example.entity.vo.request.RuntimeDetailVO;
-import com.example.entity.vo.response.ClientDetailsVO;
-import com.example.entity.vo.response.ClientPreviewVO;
-import com.example.entity.vo.response.ClientSimpleVO;
-import com.example.entity.vo.response.RuntimeHistoryVO;
+import com.example.entity.vo.request.*;
+import com.example.entity.vo.response.*;
 
 import java.util.List;
 
@@ -35,4 +29,8 @@ public interface ClientService extends IService<Client> {
     RuntimeDetailVO clientRuntimeDetailsNow(int clientId);
     // 删除 Client
     void deleteClient(int clientId);
+    // 保存 ssh 连接信息
+    void saveClientSshConnection(SshConnectionVO sshConnectionVO);
+    // 获取 ssh 连接信息
+    SshSettingsVO sshSettings(int clientId);
 }

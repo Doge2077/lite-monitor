@@ -4,16 +4,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
-import com.example.entity.vo.request.ClientDetailVO;
-import com.example.entity.vo.request.RenameClientVO;
-import com.example.entity.vo.request.RenameNodeVO;
-import com.example.entity.vo.request.RuntimeDetailVO;
-import com.example.entity.vo.response.ClientDetailsVO;
-import com.example.entity.vo.response.ClientPreviewVO;
-import com.example.entity.vo.response.ClientSimpleVO;
-import com.example.entity.vo.response.RuntimeHistoryVO;
+import com.example.entity.dto.ClientSsh;
+import com.example.entity.vo.request.*;
+import com.example.entity.vo.response.*;
 import com.example.mapper.ClientDetailMapper;
 import com.example.mapper.ClientMapper;
+import com.example.mapper.ClientSshMapper;
 import com.example.service.ClientService;
 import com.example.utils.InfluxDbUtils;
 import jakarta.annotation.PostConstruct;
@@ -23,10 +19,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.sql.Wrapper;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -35,6 +31,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Resource
     ClientDetailMapper clientDetailMapper;
+
+    @Resource
+    ClientSshMapper clientSshMapper;
 
     @Resource
     InfluxDbUtils influxDbUtils;
@@ -167,6 +166,33 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         clientDetailMapper.deleteById(clientId);
         this.initClientCache();
         this.currentRuntime.remove(clientId);
+    }
+
+    @Override
+    public void saveClientSshConnection(SshConnectionVO sshConnectionVO) {
+        Client client = this.clientIdCache.get(sshConnectionVO.getClientId());
+        if (client == null) return ;
+        ClientSsh clientSsh = new ClientSsh();
+        BeanUtils.copyProperties(sshConnectionVO, clientSsh);
+        if (Objects.nonNull(this.clientSshMapper.selectById(client.getClientId()))) {
+            this.clientSshMapper.updateById(clientSsh);
+        } else {
+            this.clientSshMapper.insert(clientSsh);
+        }
+    }
+
+    @Override
+    public SshSettingsVO sshSettings(int clientId) {
+        ClientDetail clientDetail = this.clientDetailMapper.selectById(clientId);
+        ClientSsh clientSsh = this.clientSshMapper.selectById(clientId);
+        if (clientSsh == null) {
+            SshSettingsVO sshSettingsVO = new SshSettingsVO();
+            sshSettingsVO.setClientAddress(clientDetail.getClientAddress());
+            return sshSettingsVO;
+        }
+        SshSettingsVO sshSettingsVO = clientSsh.asViewObject(SshSettingsVO.class);
+        sshSettingsVO.setClientAddress(clientDetail.getClientAddress());
+        return sshSettingsVO;
     }
 
     private void updateCache(Client client) {

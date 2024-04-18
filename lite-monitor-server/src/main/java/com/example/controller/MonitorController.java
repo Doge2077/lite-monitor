@@ -5,10 +5,8 @@ import com.example.entity.dto.Account;
 import com.example.entity.vo.request.RenameClientVO;
 import com.example.entity.vo.request.RenameNodeVO;
 import com.example.entity.vo.request.RuntimeDetailVO;
-import com.example.entity.vo.response.ClientDetailsVO;
-import com.example.entity.vo.response.ClientPreviewVO;
-import com.example.entity.vo.response.ClientSimpleVO;
-import com.example.entity.vo.response.RuntimeHistoryVO;
+import com.example.entity.vo.request.SshConnectionVO;
+import com.example.entity.vo.response.*;
 import com.example.service.AccountService;
 import com.example.service.ClientService;
 import com.example.utils.Const;
@@ -16,7 +14,6 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -32,7 +29,7 @@ public class MonitorController {
     @GetMapping("/list")
     public RestBean<List<ClientPreviewVO>> listAllClient(@RequestAttribute(Const.ATTR_USER_ID) int uid,
                                                          @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (isAdminAccount(role)) {
+        if (this.isAdminAccount(role)) {
             return RestBean.success(this.clientService.listClients());
         }
         List<ClientPreviewVO> list = accountAccessList(uid).stream().map(clientId -> this.clientService.getClientById(clientId).asViewObject(ClientPreviewVO.class)
@@ -42,7 +39,7 @@ public class MonitorController {
 
     @GetMapping("/simple-list")
     public RestBean<List<ClientSimpleVO>> simpleClientList(@RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (isAdminAccount(role)) {
+        if (this.isAdminAccount(role)) {
             return RestBean.success(this.clientService.listSimpleList());
         }
         return RestBean.noPermission();
@@ -52,7 +49,7 @@ public class MonitorController {
     public RestBean<Void> renameClient(@RequestBody @Valid RenameClientVO renameClientVO,
                                        @RequestAttribute(Const.ATTR_USER_ID) int uid,
                                        @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (permissionCheck(uid, role, renameClientVO.getClientId())) {
+        if (this.permissionCheck(uid, role, renameClientVO.getClientId())) {
             this.clientService.renameClient(renameClientVO);
             return RestBean.success();
         }
@@ -63,7 +60,7 @@ public class MonitorController {
     public RestBean<Void> renameNode(@RequestBody @Valid RenameNodeVO renameNodeVO,
                                      @RequestAttribute(Const.ATTR_USER_ID) int uid,
                                      @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (permissionCheck(uid, role, renameNodeVO.getClientId())) {
+        if (this.permissionCheck(uid, role, renameNodeVO.getClientId())) {
             this.clientService.renameNode(renameNodeVO);
             return RestBean.success();
         }
@@ -74,7 +71,7 @@ public class MonitorController {
     public RestBean<ClientDetailsVO> details(int clientId,
                                              @RequestAttribute(Const.ATTR_USER_ID) int uid,
                                              @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (permissionCheck(uid, role, clientId)) {
+        if (this.permissionCheck(uid, role, clientId)) {
             return RestBean.success(this.clientService.clientDetails(clientId));
         }
         return RestBean.noPermission();
@@ -84,7 +81,7 @@ public class MonitorController {
     public RestBean<RuntimeHistoryVO> runtimeDetailsHistory(int clientId,
                                                             @RequestAttribute(Const.ATTR_USER_ID) int uid,
                                                             @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (permissionCheck(uid, role, clientId)) {
+        if (this.permissionCheck(uid, role, clientId)) {
             return RestBean.success(this.clientService.clientRuntimeDetailsHistory(clientId));
         }
         return RestBean.noPermission();
@@ -94,7 +91,7 @@ public class MonitorController {
     public RestBean<RuntimeDetailVO> runtimeDetailsNow(int clientId,
                                                        @RequestAttribute(Const.ATTR_USER_ID) int uid,
                                                        @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (permissionCheck(uid, role, clientId)) {
+        if (this.permissionCheck(uid, role, clientId)) {
             return RestBean.success(this.clientService.clientRuntimeDetailsNow(clientId));
         }
         return RestBean.noPermission();
@@ -103,7 +100,7 @@ public class MonitorController {
 
     @GetMapping("/register")
     public RestBean<String> registerToken(@RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (isAdminAccount(role)) {
+        if (this.isAdminAccount(role)) {
             return RestBean.success(this.clientService.getRegisterToken());
         }
         return RestBean.noPermission();
@@ -112,12 +109,32 @@ public class MonitorController {
     @GetMapping("/delete")
     public RestBean<String> deleteClient(int clientId,
                                          @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
-        if (isAdminAccount(role)) {
+        if (this.isAdminAccount(role)) {
             this.clientService.deleteClient(clientId);
             return RestBean.success();
         }
         return RestBean.noPermission();
+    }
 
+    @PostMapping("/ssh-save")
+    public RestBean<Void> saveSshConnection(@RequestBody @Valid SshConnectionVO sshConnectionVO,
+                                            @RequestAttribute(Const.ATTR_USER_ID) int uid,
+                                            @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
+        if (this.permissionCheck(uid, role, sshConnectionVO.getClientId())) {
+            this.clientService.saveClientSshConnection(sshConnectionVO);
+            return RestBean.success();
+        }
+        return RestBean.noPermission();
+    }
+
+    @GetMapping("/ssh")
+    public RestBean<SshSettingsVO> sshSettings(int clientId,
+                                               @RequestAttribute(Const.ATTR_USER_ID) int uid,
+                                               @RequestAttribute(Const.ATTR_USER_ROLE) String role) {
+        if (this.permissionCheck(uid, role, clientId)) {
+            return RestBean.success(this.clientService.sshSettings(clientId));
+        }
+        return RestBean.noPermission();
     }
 
     private List<Integer> accountAccessList(int uid) {
@@ -131,7 +148,7 @@ public class MonitorController {
     }
 
     private Boolean permissionCheck(int uid, String role, int clientId) {
-        if (isAdminAccount(role)) return true;
+        if (this.isAdminAccount(role)) return true;
         return this.accountAccessList(uid).contains(clientId);
     }
 
