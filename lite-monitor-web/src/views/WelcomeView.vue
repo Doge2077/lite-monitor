@@ -22,7 +22,6 @@
 
 <script setup>
 import bgImg from '../assets/img/bg.jpg'
-
 </script>
 
 <style scoped>

@@ -41,9 +41,9 @@
 </template>
 
 <script setup>
-import { logout } from '@/net'
+import {logout} from '@/net'
 import router from "@/router";
-import {Back, Comment} from "@element-plus/icons-vue";
+import {Back} from "@element-plus/icons-vue";
 import TableItem from "@/component/TableItem.vue";
 import {useRoute} from "vue-router";
 import {ref} from "vue";

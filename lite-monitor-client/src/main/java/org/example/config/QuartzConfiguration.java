@@ -2,8 +2,6 @@ package org.example.config;
 
 import org.example.task.MonitorJobBean;
 import org.quartz.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

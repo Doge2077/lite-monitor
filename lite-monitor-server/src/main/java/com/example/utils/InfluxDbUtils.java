@@ -6,7 +6,6 @@ import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.entity.vo.response.RuntimeHistoryVO;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
-import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.query.FluxRecord;

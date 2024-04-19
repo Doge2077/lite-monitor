@@ -1,5 +1,5 @@
 <script setup>
-import {fitByUnit, percentageToStatus, rename, copyId} from '@/tools'
+import {copyId, fitByUnit, percentageToStatus, rename} from '@/tools'
 
 const props = defineProps({
   data: Object,

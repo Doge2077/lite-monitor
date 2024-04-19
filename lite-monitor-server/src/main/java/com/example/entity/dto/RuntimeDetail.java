@@ -1,7 +1,5 @@
 package com.example.entity.dto;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
 import lombok.Data;

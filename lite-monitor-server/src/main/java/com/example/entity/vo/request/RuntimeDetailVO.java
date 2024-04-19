@@ -1,6 +1,5 @@
 package com.example.entity.vo.request;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NonNull;
 

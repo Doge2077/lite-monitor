@@ -2,7 +2,6 @@ package com.example.entity.vo.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
 
 @Data

@@ -1,5 +1,5 @@
 <script setup>
-import { useDark, useToggle } from '@vueuse/core'
+import {useDark, useToggle} from '@vueuse/core'
 
 useDark({
   selector: 'html',
