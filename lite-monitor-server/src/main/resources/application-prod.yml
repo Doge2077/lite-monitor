@@ -10,17 +10,21 @@ mybatis-plus:
 spring:
   mail:
     host: smtp.163.com
-    username: javastudy111@163.com
-    password: VKQFYZMUSUZGSGEG
+    username: chalys2021@163.com
+    password: QLWTZHQLHAGBQQZL
   rabbitmq:
-    addresses: localhost
+    addresses: monitor-rabbitmq
     username: admin
-    password: admin
+    password: monitorrabbitmqadmin
     virtual-host: /
+  influx:
+    url: http://monitor-influxdb:8086/
+    user: admin
+    password: monitorinfluxdbadmin
   datasource:
-    url: jdbc:mysql://localhost:3306/test
+    url: jdbc:mysql://monitor-mysql:3306/lite-monitor-db
     username: root
-    password: 123456
+    password: monitormysqlroot
     driver-class-name: com.mysql.cj.jdbc.Driver
   security:
     jwt:
@@ -43,3 +47,8 @@ spring:
       origin: '*'
       credentials: false
       methods: '*'
+  data:
+    redis:
+      host: monitor-redis
+      port: 6379
+      database: 0

@@ -1,0 +1,50 @@
+version: "3.9"
+services:
+  monitor-mysql:
+    container_name: monitor-mysql
+    image: mysql:5
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: 'monitormysqlroot'
+      MYSQL_DATABASE: 'lite-monitor-db'
+      TZ: 'Asia/Shanghai'
+    ports:
+      - "3306:3306"
+    volumes:
+      - '/home/lite-monitor/server/mysql:/var/lib/mysql'
+  monitor-influxdb:
+    container_name: monitor-influxdb
+    image: influxdb:latest
+    environment:
+      INFLUXDB_DB: 'lite-monitor'
+      INFLUXDB_ADMIN_USER: 'admin' # 管理员用户名
+      INFLUXDB_ADMIN_PASSWORD: 'monitorinfluxdbadmin' # 管理员密码
+    ports:
+      - "8086:8086"
+    volumes:
+      - '/home/lite-monitor/server/influxdb:/var/lib/influxdb'
+  monitor-redis:
+    container_name: monitor-redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  monitor-rabbitmq:
+    container_name: monitor-rabbitmq
+    image: 'rabbitmq:3-management'
+    hostname: 'rabbitmq'
+    environment:
+      RABBITMQ_DEFAULT_USER: 'admin'          # 替换为你想要的用户名
+      RABBITMQ_DEFAULT_PASS: 'monitorrabbitmqadmin'      # 替换为你想要的密码
+      RABBITMQ_DEFAULT_VHOST: '/'            # 虚拟主机
+    ports:
+      - '5672:5672'    # 应用程序连接端口
+      - '15672:15672'  # 管理界面访问端口
+    volumes:
+      - '/home/lite-monitor/server/rabbitmq:/var/lib/rabbitmq'
+  monitor-server:
+    container_name: monitor-server
+    build: .
+    ports:
+      - "8080:8080"
+      - "80:80"
+    restart: always
