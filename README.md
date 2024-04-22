@@ -21,7 +21,7 @@
 <p align="center">
   简体中文
   ｜
-  <a href="https://github.com/krahets/hello-algo/blob/main/en/README.md">English</a>
+  <a href="https://github.com/Doge2077/lite-monitor/blob/main/en/README.md">English</a>
 </p>
 
 ## 关于 Lite-monitor
