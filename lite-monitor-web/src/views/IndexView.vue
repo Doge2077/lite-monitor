@@ -2,7 +2,7 @@
   <el-container class="main-container">
     <el-header class="main-header">
       <el-image style="height: 40px"
-                src="../src/assets/logo/lite-monitor.png"/>
+                :src="mainLogo"/>
       <div class="tabs">
         <table-item v-for="item in tabs" :name="item.name"
                     :active="item.id === tab" @click="changePage(item)"/>
@@ -16,7 +16,7 @@
         </div>
         <el-dropdown>
           <el-avatar class="el-avatar my-avatar"
-                     src="../src/assets/logo/lite-monitor-logo.png"/>
+                     :src="avatarLogo"/>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="userLogout">
@@ -48,6 +48,8 @@ import TableItem from "@/component/TableItem.vue";
 import {useRoute} from "vue-router";
 import {ref} from "vue";
 import {useStore} from "@/store";
+import mainLogo from '@/assets/logo/lite-monitor.png';
+import avatarLogo from '@/assets/logo/lite-monitor-logo.png'
 
 const store = useStore()
 const route = useRoute()

@@ -32,7 +32,7 @@ const formRef = ref()
 function saveConnection() {
   formRef.value.validate((isValid) => {
     if(isValid) {
-      post('/api/monitor/ssh-save', {
+      post('/monitor/ssh-save', {
         ...connection,
         clientId: props.clientId
       }, () => state.value = 2)
@@ -44,7 +44,7 @@ watch(() => props.clientId, clientId => {
   state.value = 1
   if(clientId !== -1) {
     connection.clientAddress = ''
-    get(`/api/monitor/ssh?clientId=${clientId}`, data => {
+    get(`/monitor/ssh?clientId=${clientId}`, data => {
       Object.assign(connection, data)
       console.log(data)
     })

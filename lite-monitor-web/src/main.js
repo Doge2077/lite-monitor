@@ -8,7 +8,9 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import {createPinia} from "pinia";
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-axios.defaults.baseURL = 'http://spring:8080'
+axios.defaults.baseURL = '/api'
+// axios.defaults.baseURL = 'http://localhost:8080/api'
+
 
 const app = createApp(App)
 const pinia = createPinia()

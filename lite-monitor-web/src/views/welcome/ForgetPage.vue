@@ -131,7 +131,7 @@ const onValidate = (prop, isValid) => {
 
 const validateEmail = () => {
     coldTime.value = 60
-    get(`/api/auth/ask-code?email=${form.email}&type=reset`, () => {
+    get(`/auth/ask-code?email=${form.email}&type=reset`, () => {
       ElMessage.success(`验证码已发送到邮箱: ${form.email}，请注意查收`)
       const handle = setInterval(() => {
         coldTime.value--
@@ -148,7 +148,7 @@ const validateEmail = () => {
 const confirmReset = () => {
     formRef.value.validate((isValid) => {
         if(isValid) {
-            post('/api/auth/reset-confirm', {
+            post('/auth/reset-confirm', {
                 email: form.email,
                 code: form.code
             }, () => active.value++)
@@ -159,7 +159,7 @@ const confirmReset = () => {
 const doReset = () => {
     formRef.value.validate((isValid) => {
         if(isValid) {
-            post('/api/auth/reset-password', {
+            post('/auth/reset-password', {
                 email: form.email,
                 code: form.code,
                 password: form.password

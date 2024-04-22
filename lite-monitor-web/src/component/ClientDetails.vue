@@ -61,7 +61,7 @@ function deleteClient() {
     cancelButtonText: '取消',
     type: 'warning',
   }).then(() => {
-    get(`/api/monitor/delete?clientId=${props.clientId}`, () => {
+    get(`/monitor/delete?clientId=${props.clientId}`, () => {
       emits('delete')
       props.update()
       ElMessage.success('主机已成功移除')
@@ -78,14 +78,14 @@ const init = clientId =>{
     if (clientId !== -1) {
       details.base = {}
       details.runtime = { list: [] }
-      get(`/api/monitor/details?clientId=${clientId}`, data => Object.assign(details.base, data))
-      get(`/api/monitor/runtime-history?clientId=${clientId}`, data => Object.assign(details.runtime, data))
+      get(`/monitor/details?clientId=${clientId}`, data => Object.assign(details.base, data))
+      get(`/monitor/runtime-history?clientId=${clientId}`, data => Object.assign(details.runtime, data))
     }
 }
 
 setInterval(() => {
   if (props.clientId !== -1 && details.runtime) {
-    get(`/api/monitor/runtime-now?clientId=${props.clientId}`, data => {
+    get(`/monitor/runtime-now?clientId=${props.clientId}`, data => {
       if (details.runtime.list.length >= 3600) {
         details.runtime.list.splice(0, 1)
       }

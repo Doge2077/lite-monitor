@@ -11,6 +11,7 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Component
 public class InfluxDbUtils {
     @Value("${spring.influx.url}")
@@ -60,7 +62,10 @@ public class InfluxDbUtils {
         String formatedQuery = String.format(query, BUCKET, "-1h", clientId);
         List<FluxTable> fluxTableList = this.client.getQueryApi().query(formatedQuery, ORG);
         int size = fluxTableList.size();
-        if (size == 0) return runtimeHistoryVO;
+        if (size == 0) {
+            log.error("查询不到数据");
+            return new RuntimeHistoryVO();
+        }
         List<FluxRecord> fluxRecordList = fluxTableList.get(0).getRecords();
         for (int i = 0; i < fluxRecordList.size(); i ++) {
             JSONObject object = new JSONObject();

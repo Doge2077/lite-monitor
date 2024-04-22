@@ -38,7 +38,7 @@ const clientList = computed(() => {
 
 const updateList = () => {
   if (route.name === 'manage') {
-    get('/api/monitor/list', data => list.value = data)
+    get('/monitor/list', data => list.value = data)
   }
 }
 setInterval(updateList, 1000)
@@ -59,7 +59,7 @@ const register = reactive({
   token: ''
 })
 
-const refreshToken = () => get('/api/monitor/register', token => register.token = token)
+const refreshToken = () => get('/monitor/register', token => register.token = token)
 
 function openTerminal(clientId) {
   terminal.show = true

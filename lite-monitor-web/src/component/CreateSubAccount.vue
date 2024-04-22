@@ -61,7 +61,7 @@ function createSubAccount() {
       return
     }
     if(isValid) {
-      post('/api/user/sub/create', {
+      post('/user/sub/create', {
         ...form,
         clients: checkedClients
       }, () => {

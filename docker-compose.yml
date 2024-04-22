@@ -12,6 +12,7 @@ services:
       - "3306:3306"
     volumes:
       - '/home/lite-monitor/server/mysql:/var/lib/mysql'
+      - dbdata:/sdd
   monitor-influxdb:
     container_name: monitor-influxdb
     image: influxdb:latest
@@ -43,8 +44,14 @@ services:
       - '/home/lite-monitor/server/rabbitmq:/var/lib/rabbitmq'
   monitor-server:
     container_name: monitor-server
-    build: .
+    build: ./lite-monitor-server/
     ports:
-      - "8080:8080"
-      - "80:80"
+      - "8010:8010"
     restart: always
+  monitor-frontend:
+    container_name: monitor-frontend
+    build: ./lite-monitor-web/
+    ports:
+      - "80:80"
+volumes:
+  dbdata:

@@ -45,7 +45,7 @@ const onEmailValidate = (prop, isValid) => {
 const validateEmail = () => {
   coldTime.value = 60
   let handle;
-  get(`/api/auth/ask-code?email=${emailForm.email}&type=modify`, () => {
+  get(`/auth/ask-code?email=${emailForm.email}&type=modify`, () => {
     ElMessage.success(`验证码已发送到邮箱: ${emailForm.email}，请注意查收`)
     handle = setInterval(() => {
       coldTime.value--
@@ -60,7 +60,7 @@ const validateEmail = () => {
 }
 
 function modifyEmail() {
-  post('/api/user/modify-email', emailForm, () => {
+  post('/user/modify-email', emailForm, () => {
     ElMessage.success('邮件修改成功')
     logout(() => router.push('/'))
   })
@@ -87,7 +87,7 @@ const rules = {
 function resetPassword() {
   formRef.value.validate(isValid => {
     if(isValid) {
-      post('/api/user/change-password', form, () => {
+      post('/user/change-password', form, () => {
         ElMessage.success('密码修改成功，请重新登录!')
         logout(() => router.push('/'))
       })
@@ -97,7 +97,7 @@ function resetPassword() {
 
 const simpleList = ref([])
 if(store.isAdmin) {
-  get('/api/monitor/simple-list', list => {
+  get('/monitor/simple-list', list => {
     simpleList.value = list
     initSubAccounts()
   })
@@ -105,12 +105,12 @@ if(store.isAdmin) {
 
 const accounts = ref([])
 const initSubAccounts = () =>
-    get('/api/user/sub/list', list => accounts.value = list)
+    get('/user/sub/list', list => accounts.value = list)
 
 const createAccount = ref(false)
 
 function deleteAccount(id) {
-  get(`/api/user/sub/delete?uid=${id}`, () => {
+  get(`/user/sub/delete?uid=${id}`, () => {
     ElMessage.success('子账户删除成功')
     initSubAccounts()
   })
