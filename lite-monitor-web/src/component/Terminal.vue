@@ -12,7 +12,9 @@ const emits = defineEmits(['dispose'])
 
 const terminalRef = ref()
 
+// const socket = new WebSocket(`ws://主机:端口/terminal/${props.clientId}`)
 const socket = new WebSocket(`ws://127.0.0.1:8080/terminal/${props.clientId}`)
+
 socket.onclose = evt => {
   if(evt.code !== 1000) {
     ElMessage.warning(`连接失败: ${evt.reason}`)

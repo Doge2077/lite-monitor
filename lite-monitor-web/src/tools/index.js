@@ -30,7 +30,7 @@ function rename(clientId, clientName, after) {
         inputValue: clientName,
         inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,10}$/,
         inputErrorMessage: '名称只能包含中英文字符、数字和下划线',
-    }).then(({ value }) => post('/api/monitor/rename',{
+    }).then(({ value }) => post('/monitor/rename',{
             clientId: clientId,
             clientName: value
         },() => {

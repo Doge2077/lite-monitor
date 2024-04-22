@@ -44,7 +44,7 @@ const enableNodeEdit = () => {
 }
 
 const submitNodeEdit = () => {
-  post('api/monitor/node', {
+  post('/monitor/node', {
     clientId: props.clientId,
     node: nodeEdit.name,
     location: nodeEdit.location
