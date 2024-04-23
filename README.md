@@ -34,7 +34,7 @@
 
 支持一键 SSH 到目标主机，便于快速操作：
 
-![](https://image.itbaima.cn/images/40/image-20240422189124020.png)
+![](https://lys2021.com/wp-content/uploads/2024/04/image-20240422189124020.png)
 
 支持多用户管理不同主机：
 

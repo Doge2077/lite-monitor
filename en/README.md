@@ -36,7 +36,7 @@ This is a fast, accurate, lightweight server monitoring system with second-level
 
 Supports one-click SSH to the target host, which is convenient for quick operations:
 
-![](https://image.itbaima.cn/images/40/image-20240422189124020.png)
+![](https://lys2021.com/wp-content/uploads/2024/04/image-20240422189124020.png)
 
 Supports multi-user management of different hosts:
 
