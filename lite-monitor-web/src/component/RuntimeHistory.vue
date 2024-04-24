@@ -81,10 +81,10 @@ onMounted(() => {
 
 <template>
   <div class="charts">
-    <div id="cpuUsage" style="width: 100%;height:170px"></div>
-    <div id="memoryUsage" style="width: 100%;height:170px"></div>
-    <div id="networkUsage" style="width: 100%;height:170px"></div>
-    <div id="diskUsage" style="width: 100%;height:170px"></div>
+    <div id="cpuUsage" style="width: 100%;height:200px"></div>
+    <div id="memoryUsage" style="width: 100%;height:200px"></div>
+    <div id="networkUsage" style="width: 100%;height:200px"></div>
+    <div id="diskUsage" style="width: 100%;height:200px"></div>
   </div>
 </template>
 
