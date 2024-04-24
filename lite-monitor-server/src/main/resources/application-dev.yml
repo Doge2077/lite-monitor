@@ -9,12 +9,12 @@ spring:
     username: chalys2021@163.com
     password: QLWTZHQLHAGBQQZL
   rabbitmq:
-    addresses: 192.168.160.128
+    addresses: 192.168.101.128
     username: admin
     password: admin
     virtual-host: /
   influx:
-    url: http://192.168.160.128:8086/
+    url: http://192.168.101.128:8086/
     user: admin
     password: 023017lys
   datasource:
