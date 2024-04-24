@@ -13,7 +13,7 @@ const props = defineProps({
     <div style="display: flex; justify-content: space-between">
       <div>
         <div class="name">
-          <span :class="`flag-icon flag-icon-${data.location}`"></span>
+          <span :class="`fi fi-${data.location}`"></span>
           <span style="margin: 0 5px"> {{data.clientName }} </span>
           <i class="fa-regular fa-pen-to-square interact-item" @click.stop="rename(props.data.clientId, props.data.clientName, update)"></i>
         </div>
