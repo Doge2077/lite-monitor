@@ -107,7 +107,7 @@ function createSubAccount() {
           <el-checkbox @change="state => onCheck(state, item.clientId)"/>
           <div style="margin-left: 20px">
             <div style="font-size: 14px;font-weight: bold">
-              <span :class="`flag-icon flag-icon-${item.location}`"></span>
+              <span :class="`fi fi-${item.location}`"></span>
               <span style="margin: 0 10px">{{ item.name }}</span>
             </div>
             <div style="font-size: 12px;color: grey">

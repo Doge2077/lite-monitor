@@ -89,7 +89,7 @@ const terminal = reactive({
     <div style="margin-bottom: 20px">
       <el-checkbox-group v-model="checkedNodes">
         <el-checkbox v-for="node in locations" :key="node" :label="node.name" border>
-          <span :class="`flag-icon flag-icon-${node.name}`"></span>
+          <span :class="`fi fi-${node.name}`"></span>
           <span style="font-size: 13px;margin-left: 10px">{{node.desc}}</span>
         </el-checkbox>
       </el-checkbox-group>

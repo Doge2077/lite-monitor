@@ -137,7 +137,7 @@ watch(() => props.clientId, init, {immediate: true})
           </div>
           <div v-if="!details.editNode">
             <span>服务器节点</span>
-            <span :class="`flag-icon flag-icon-${details.base.location}`"></span>&nbsp;
+            <span :class="`fi fi-${details.base.location}`"></span>&nbsp;
             <span>{{details.base.node}}</span> &nbsp;
             <i @click.stop="enableNodeEdit" class="fa-solid fa-pen-to-square interact-item"/>
           </div>
@@ -147,7 +147,7 @@ watch(() => props.clientId, init, {immediate: true})
               <div style="display: flex">
                 <el-select v-model="nodeEdit.location" style="width: 80px" size="small">
                   <el-option v-for="item in locations" :value="item.name">
-                    <span :class="`flag-icon flag-icon-${item.name}`"></span>&nbsp;
+                    <span :class="`fi fi-${item.name}`"></span>&nbsp;
                     {{item.desc}}
                   </el-option>
                 </el-select>
