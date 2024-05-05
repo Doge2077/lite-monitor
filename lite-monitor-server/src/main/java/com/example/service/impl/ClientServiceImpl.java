@@ -105,6 +105,11 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
+    public RuntimeDetailVO getRuntimeDetailByClientId(int clientId) {
+        return this.currentRuntime.get(clientId);
+    }
+
+    @Override
     public List<ClientPreviewVO> listClients() {
         return clientIdCache.values().stream().map(client -> {
             ClientPreviewVO clientPreviewVO = client.asViewObject(ClientPreviewVO.class);

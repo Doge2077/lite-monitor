@@ -16,6 +16,7 @@ public interface ClientService extends IService<Client> {
     Boolean updateClientDetail(ClientDetailVO clientDetailVO, Client client);
     // 客户端运行时数据上报
     Boolean updateRuntimeDetail(RuntimeDetailVO runtimeDetailVO, Client client);
+    RuntimeDetailVO getRuntimeDetailByClientId(int clientId);
     // 列出所有主机
     List<ClientPreviewVO> listClients();
     List<ClientSimpleVO> listSimpleList();

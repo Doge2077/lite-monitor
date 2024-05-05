@@ -12,6 +12,7 @@ import com.example.service.ClientService;
 import com.example.utils.Const;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +33,14 @@ public class MonitorController {
         if (this.isAdminAccount(role)) {
             return RestBean.success(this.clientService.listClients());
         }
-        List<ClientPreviewVO> list = accountAccessList(uid).stream().map(clientId -> this.clientService.getClientById(clientId).asViewObject(ClientPreviewVO.class)
-        ).toList();
+        List<ClientPreviewVO> list = accountAccessList(uid).stream().map(clientId -> {
+            ClientDetailsVO clientDetailsVO = this.clientService.clientDetails(clientId);
+            RuntimeDetailVO runtimeDetailVO = this.clientService.getRuntimeDetailByClientId(clientId);
+            ClientPreviewVO clientPreviewVO = new ClientPreviewVO();
+            BeanUtils.copyProperties(clientDetailsVO, clientPreviewVO);
+            BeanUtils.copyProperties(runtimeDetailVO, clientPreviewVO);
+            return clientPreviewVO;
+        }).toList();
         return RestBean.success(list);
     }
 

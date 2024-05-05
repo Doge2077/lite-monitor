@@ -2,7 +2,8 @@
 import {computed, reactive, watch} from "vue";
 import {get} from "@/net";
 import RuntimeHistory from "@/component/RuntimeHistory.vue";
-import aiFenxiA from '@/assets/img/manage-background.jpg'
+import aiA from '@/assets/ai-gen/c-1.png'
+import aiB from '@/assets/ai-gen/c-2.png'
 
 const locations = [
   {name: 'cn', desc: '中国大陆'},
@@ -97,8 +98,8 @@ watch(() => props.clientId, init, {immediate: true})
         <div v-if="details.base.online" v-loading="!details.runtime.list.length"
              style="min-height: 400px">
           <div style="display: flex; justify-content: space-between">
-            <el-image style="margin: 10px" :src="aiFenxiA"/>
-            <el-image style="margin: 10px" :src="aiFenxiA"/>
+            <el-image style="margin: 10px" :src="aiB"/>
+            <el-image style="margin: 10px" :src="aiA"/>
           </div>
         </div>
         <el-empty description="服务器已离线" v-else/>

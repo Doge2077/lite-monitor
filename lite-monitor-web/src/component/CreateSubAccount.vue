@@ -108,7 +108,7 @@ function createSubAccount() {
           <div style="margin-left: 20px">
             <div style="font-size: 14px;font-weight: bold">
               <span :class="`fi fi-${item.location}`"></span>
-              <span style="margin: 0 10px">{{ item.name }}</span>
+              <span style="margin: 0 10px">{{ item.clientName }}</span>
             </div>
             <div style="font-size: 12px;color: grey">
               操作系统:
