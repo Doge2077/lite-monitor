@@ -48,7 +48,7 @@ import TableItem from "@/component/TableItem.vue";
 import {useRoute} from "vue-router";
 import {ref} from "vue";
 import {useStore} from "@/store";
-import mainLogo from '@/assets/logo/lite-monitor.png';
+import mainLogo from '@/assets/logo/lite-monitor-nobg.png';
 import avatarLogo from '@/assets/logo/lite-monitor-logo.png'
 
 const store = useStore()
